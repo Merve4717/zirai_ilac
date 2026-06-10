@@ -638,7 +638,11 @@
             <!-- Sidebar -->
             <div class="db-sidebar">
                 <div class="db-sidebar-section">
-                    <div class="db-sidebar-title">Tablolar <button class="btn-db btn-db-sm btn-db-ghost" onclick="loadSchema()" style="padding: 2px 6px;">🔄</button></div>
+                    <div class="db-sidebar-title">
+                        <span>Tablolar</span>
+                        <button class="btn-db btn-db-sm btn-db-ghost" onclick="loadSchema()" style="padding: 2px 6px;" title="Şemayı Yenile">🔄</button>
+                    </div>
+                    <input type="text" id="sidebar-table-search" class="db-input" placeholder="🔍 Tablo ara..." oninput="filterSidebarTables()" style="width: 100%; font-size: 0.75rem; padding: 6px 10px; margin-bottom: 10px; border-radius: 6px; background: rgba(0,0,0,0.3); border: 1px solid var(--db-border);">
                     <div id="sidebar-tables-list" class="db-table-list">
                         <!-- Loaded dynamically -->
                         <span style="font-size: 0.75rem; color: var(--db-text-darker);">Yükleniyor...</span>
@@ -666,7 +670,7 @@
                     <div class="sql-editor-body">
                         <div class="line-numbers" id="line-numbers-pre">1</div>
                         <textarea id="sql-editor-area" class="sql-textarea" spellcheck="false" 
-                            placeholder="-- SQL sorgunuzu buraya yazın&#10;-- Örnek:&#10;SELECT * FROM Products WHERE StockQuantity < 50;&#10;-- (F5 tuşu ile de çalıştırabilirsiniz)"
+                            placeholder="-- SQL sorgunuzu buraya yazın&#10;-- Örnek:&#10;SELECT * FROM Products WHERE StockQuantity < 50;&#10;-- (F5 veya Ctrl+Enter ile de çalıştırabilirsiniz)"
                             oninput="syncLineNumbers()" onkeydown="handleEditorKeys(event)"></textarea>
                     </div>
                 </div>
@@ -690,8 +694,18 @@
     </div>
 
     <!-- 2. SCHEMA VIEW SECTION -->
-    <div id="sec-schema" class="db-section-content" style="display: none;">
-        <div class="schema-grid" id="schema-cards-grid">
+    <div id="sec-schema" class="db-section-content" style="display: none; padding: 20px;">
+        <div class="db-glass-panel" style="margin-bottom: 20px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+            <div style="display: flex; gap: 12px; align-items: center; flex: 1;">
+                <input type="text" id="schema-search-input" class="db-input" placeholder="🔍 Tablo veya kolon adı ara..." oninput="filterSchemaGrid()" style="width: 100%; max-width: 400px; font-size: 0.82rem; padding: 8px 14px;">
+                <span id="schema-summary" style="font-size: 0.82rem; color: var(--db-text-muted); font-weight: 500;">Yükleniyor...</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <span class="badge-pk" style="margin-right: 0; padding: 3px 6px; font-size: 0.7rem;">PK</span>
+                <span class="badge-fk" style="margin-right: 0; padding: 3px 6px; font-size: 0.7rem;">FK</span>
+            </div>
+        </div>
+        <div class="schema-grid" id="schema-cards-grid" style="padding: 0;">
             <!-- Loaded dynamically -->
         </div>
     </div>
@@ -818,6 +832,13 @@
                 throw new Error(errData.message || "Şema yüklenirken hata oluştu.");
             }
             liveSchema = await res.json();
+            
+            // Clear search fields on reload
+            const sidebarSearch = document.getElementById('sidebar-table-search');
+            if (sidebarSearch) sidebarSearch.value = '';
+            const schemaSearch = document.getElementById('schema-search-input');
+            if (schemaSearch) schemaSearch.value = '';
+
             renderSidebarTables();
             if (document.getElementById('sec-schema').style.display !== 'none') {
                 renderSchemaGrid();
@@ -828,12 +849,17 @@
     }
 
     // RENDER SIDEBAR TABLES
-    function renderSidebarTables() {
+    function renderSidebarTables(filter = '') {
         const list = document.getElementById('sidebar-tables-list');
         if (!liveSchema) return;
         
         let html = '';
+        let count = 0;
         for (const [tbl, meta] of Object.entries(liveSchema)) {
+            if (filter && !tbl.toLowerCase().includes(filter) && !meta.label.toLowerCase().includes(filter)) {
+                continue;
+            }
+            count++;
             html += `
                 <div class="db-table-item" onclick="browseTable('${tbl}')">
                     <span>${meta.icon} ${meta.label}</span>
@@ -841,7 +867,15 @@
                 </div>
             `;
         }
+        if (count === 0) {
+            html = `<div style="font-size: 0.75rem; color: var(--db-text-darker); text-align: center; padding: 10px;">Bulunamadı</div>`;
+        }
         list.innerHTML = html;
+    }
+
+    function filterSidebarTables() {
+        const val = document.getElementById('sidebar-table-search').value.toLowerCase().trim();
+        renderSidebarTables(val);
     }
 
     // BROWSE A TABLE DIRECTLY
@@ -1023,6 +1057,9 @@
         if (e.key === 'F5') {
             e.preventDefault();
             runCustomQuery();
+        } else if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            runCustomQuery();
         } else if (e.key === 'Tab') {
             e.preventDefault();
             const start = area.selectionStart;
@@ -1192,7 +1229,7 @@
     }
 
     // 6. RENDER SCHEMA GRID
-    function renderSchemaGrid() {
+    function renderSchemaGrid(filter = '') {
         const grid = document.getElementById('schema-cards-grid');
         if (!liveSchema) {
             grid.innerHTML = `<div style="color:var(--db-text-muted);">Yükleniyor...</div>`;
@@ -1200,7 +1237,18 @@
         }
 
         let html = '';
+        let visibleCount = 0;
+        let totalTables = Object.keys(liveSchema).length;
+
         for (const [tbl, meta] of Object.entries(liveSchema)) {
+            const matchesTbl = tbl.toLowerCase().includes(filter) || meta.label.toLowerCase().includes(filter);
+            const matchingCols = meta.cols.filter(c => c.n.toLowerCase().includes(filter) || c.t.toLowerCase().includes(filter));
+            
+            if (filter && !matchesTbl && matchingCols.length === 0) {
+                continue;
+            }
+
+            visibleCount++;
             html += `
                 <div class="schema-card">
                     <div class="schema-card-header" style="cursor: pointer;" onclick="browseTable('${tbl}')" title="Tabloyu tara">
@@ -1215,10 +1263,14 @@
                 if (c.pk) badge += `<span class="badge-pk">PK</span>`;
                 if (c.fk) badge += `<span class="badge-fk" title="İlişki: ${c.fk}">FK</span>`;
 
+                const highlight = filter && (c.n.toLowerCase().includes(filter) || c.t.toLowerCase().includes(filter))
+                    ? 'background: rgba(245, 158, 11, 0.15); font-weight: 500;' 
+                    : '';
+
                 html += `
-                    <div class="schema-col-item">
-                        <span>${badge}${c.n}</span>
-                        <span style="font-family: monospace; font-size: 0.72rem; color: var(--db-text-darker);">${c.t} ${c.nn ? 'NOT NULL' : ''}</span>
+                    <div class="schema-col-item" style="${highlight}">
+                        <span style="${c.pk ? 'font-weight:700; color:var(--db-gold);' : ''}">${badge}${c.n}</span>
+                        <span style="font-family: monospace; font-size: 0.72rem; color: var(--db-text-muted);">${c.t} ${c.nn ? 'NOT NULL' : ''}</span>
                     </div>
                 `;
             });
@@ -1228,7 +1280,24 @@
                 </div>
             `;
         }
-        grid.innerHTML = html;
+
+        if (visibleCount === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--db-text-muted);">Eşleşen tablo veya kolon bulunamadı.</div>`;
+        } else {
+            grid.innerHTML = html;
+        }
+
+        const summaryEl = document.getElementById('schema-summary');
+        if (summaryEl) {
+            summaryEl.textContent = filter 
+                ? `${totalTables} tablodan ${visibleCount} tanesi gösteriliyor` 
+                : `Toplam ${totalTables} tablo`;
+        }
+    }
+
+    function filterSchemaGrid() {
+        const val = document.getElementById('schema-search-input').value.toLowerCase().trim();
+        renderSchemaGrid(val);
     }
 
     // 7. RENDER SAVED QUERIES FROM LOCALSTORAGE
@@ -1363,4 +1432,15 @@
         container.appendChild(el);
         setTimeout(() => el.remove(), 3000);
     }
+
+    // 9. GLOBAL KEYBOARD SHORTCUTS
+    document.addEventListener("keydown", function (e) {
+        if (e.key === 'F5') {
+            const editorSec = document.getElementById('sec-editor');
+            if (editorSec && editorSec.style.display !== 'none') {
+                e.preventDefault();
+                runCustomQuery();
+            }
+        }
+    });
 </script>

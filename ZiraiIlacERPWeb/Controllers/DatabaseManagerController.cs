@@ -41,7 +41,7 @@ namespace ZiraiIlacERPWeb.Controllers
                     cmd.CommandText = @"
                         SELECT 
                             t.name AS TableName, 
-                            SUM(p.rows) AS RowCount
+                            SUM(p.rows) AS [RowCount]
                         FROM sys.tables t
                         JOIN sys.indexes i ON t.object_id = i.object_id
                         JOIN sys.partitions p ON i.object_id = p.object_id AND i.index_id = p.index_id
