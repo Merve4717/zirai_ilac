@@ -1,67 +1,72 @@
 {
   "Project": {
     "Id": 1,
-    "Name": "Zirai \u0130la\u00E7 \u00DCretim Kapasitesi Art\u0131r\u0131m\u0131 \u0026 Ak\u0131ll\u0131 Depolama Entegrasyonu",
-    "Description": "Akademik ve end\u00FCstriyel standartlarda zirai ila\u00E7 \u00FCretim kapasitesini 2 kat\u0131na \u00E7\u0131karacak yeni reakt\u00F6r montaj\u0131, saha geni\u015Fletilmesi ve IoT tabanl\u0131 ak\u0131ll\u0131 depolama sisteminin anahtar teslim entegrasyonu projesidir.",
+    "Name": "Zirai İlaç Üretim Kapasitesi Artırımı & Akıllı Depolama Entegrasyonu",
+    "Description": "Akademik ve endüstriyel standartlarda zirai ilaç üretim kapasitesini 2 katına çıkaracak yeni reaktör montajı, saha genişletilmesi ve IoT tabanlı akıllı depolama sisteminin anahtar teslim entegrasyonu projesidir.",
     "Budget": 750000,
     "Capital": 1200000,
-    "StartDate": "2026-05-16T16:34:05.230427+03:00",
-    "EndDate": "2026-07-30T16:34:05.2342791+03:00",
+    "StartDate": "2026-05-16T00:00:00",
+    "EndDate": "2026-07-30T00:00:00",
     "Status": "Devam Ediyor",
     "Progress": 61
   },
   "Team": [
     {
       "Id": 1,
-      "Name": "Do\u00E7. Dr. Selim Aksoy",
-      "Role": "Proje Y\u00F6neticisi",
+      "Name": "Doç. Dr. Selim Aksoy",
+      "Role": "Proje Yöneticisi",
       "Email": "s.aksoy@tarim.com",
       "Phone": "0532 999 1111",
-      "Avatar": "\uD83D\uDC68\u200D\uD83D\uDCBC",
-      "Specialty": "Proje Y\u00F6netimi \u0026 CPM"
+      "Avatar": "👨‍💼",
+      "Specialty": "Proje Yönetimi & CPM",
+      "DailySalary": 2800
     },
     {
       "Id": 2,
-      "Name": "Dr. Elif Y\u0131lmaz",
+      "Name": "Dr. Elif Yılmaz",
       "Role": "Kimya Ar-Ge Lideri",
       "Email": "e.yilmaz@tarim.com",
       "Phone": "0533 888 2222",
-      "Avatar": "\uD83D\uDC69\u200D\uD83D\uDD2C",
-      "Specialty": "Kimyasal Form\u00FClasyon"
+      "Avatar": "👩‍🔬",
+      "Specialty": "Kimyasal Formülasyon",
+      "DailySalary": 2400
     },
     {
       "Id": 3,
       "Name": "Murat Can",
-      "Role": "IoT \u0026 Otomasyon M\u00FCh.",
+      "Role": "IoT & Otomasyon Müh.",
       "Email": "m.can@tarim.com",
       "Phone": "0535 777 3333",
-      "Avatar": "\uD83D\uDC68\u200D\uD83D\uDCBB",
-      "Specialty": "G\u00F6m\u00FCl\u00FC Sistemler \u0026 Yaz\u0131l\u0131m"
+      "Avatar": "👨‍💻",
+      "Specialty": "Gömülü Sistemler & Yazılım",
+      "DailySalary": 2100
     },
     {
       "Id": 4,
       "Name": "Zeynep Demir",
-      "Role": "Tedarik \u0026 Sat\u0131n Alma",
+      "Role": "Tedarik & Satın Alma",
       "Email": "z.demir@tarim.com",
       "Phone": "0536 666 4444",
-      "Avatar": "\uD83D\uDC69\u200D\uD83D\uDCBC",
-      "Specialty": "S\u00F6zle\u015Fme \u0026 Lojistik"
+      "Avatar": "👩‍💼",
+      "Specialty": "Sözleşme & Lojistik",
+      "DailySalary": 1900
     },
     {
       "Id": 5,
       "Name": "Hasan Kaya",
-      "Role": "Saha \u015Eefi",
+      "Role": "Saha Şefi",
       "Email": "h.kaya@tarim.com",
       "Phone": "0537 555 5555",
-      "Avatar": "\uD83D\uDC77",
-      "Specialty": "\u0130n\u015Faat \u0026 Donan\u0131m Kurulumu"
+      "Avatar": "👷",
+      "Specialty": "İnşaat & Donanım Kurulumu",
+      "DailySalary": 1700
     }
   ],
   "Tasks": [
     {
       "Id": 1,
       "ProjectId": 1,
-      "TaskName": "Fizibilite \u0026 Pazar Analizi Raporu",
+      "TaskName": "Fizibilite & Pazar Analizi Raporu",
       "AssigneeId": 1,
       "DurationDays": 8,
       "ProgressPercent": 100,
@@ -76,13 +81,11 @@
     {
       "Id": 2,
       "ProjectId": 1,
-      "TaskName": "\u0130la\u00E7 Form\u00FClasyonu \u0026 Hammadde Onay\u0131",
+      "TaskName": "İlaç Formülasyonu & Hammadde Onayı",
       "AssigneeId": 2,
       "DurationDays": 12,
       "ProgressPercent": 100,
-      "PredecessorTaskIds": [
-        1
-      ],
+      "PredecessorTaskIds": [1],
       "EarlyStart": 8,
       "EarlyFinish": 20,
       "LateStart": 8,
@@ -93,13 +96,11 @@
     {
       "Id": 3,
       "ProjectId": 1,
-      "TaskName": "Reakt\u00F6r ve Ekipman \u0130thalat Sipari\u015Fi",
+      "TaskName": "Reaktör ve Ekipman İthalat Siparişi",
       "AssigneeId": 4,
       "DurationDays": 15,
       "ProgressPercent": 100,
-      "PredecessorTaskIds": [
-        2
-      ],
+      "PredecessorTaskIds": [2],
       "EarlyStart": 20,
       "EarlyFinish": 35,
       "LateStart": 23,
@@ -110,13 +111,11 @@
     {
       "Id": 4,
       "ProjectId": 1,
-      "TaskName": "\u00DCretim Alan\u0131 Zemin \u0026 Altyap\u0131 Haz\u0131rl\u0131\u011F\u0131",
+      "TaskName": "Üretim Alanı Zemin & Altyapı Hazırlığı",
       "AssigneeId": 5,
       "DurationDays": 20,
       "ProgressPercent": 90,
-      "PredecessorTaskIds": [
-        1
-      ],
+      "PredecessorTaskIds": [1],
       "EarlyStart": 8,
       "EarlyFinish": 28,
       "LateStart": 18,
@@ -127,14 +126,11 @@
     {
       "Id": 5,
       "ProjectId": 1,
-      "TaskName": "Yeni Reakt\u00F6r Kurulumu ve Montaj\u0131",
+      "TaskName": "Yeni Reaktör Kurulumu ve Montajı",
       "AssigneeId": 5,
       "DurationDays": 14,
       "ProgressPercent": 35,
-      "PredecessorTaskIds": [
-        3,
-        4
-      ],
+      "PredecessorTaskIds": [3, 4],
       "EarlyStart": 35,
       "EarlyFinish": 49,
       "LateStart": 38,
@@ -145,13 +141,11 @@
     {
       "Id": 6,
       "ProjectId": 1,
-      "TaskName": "Ak\u0131ll\u0131 Depo RFID \u0026 Sens\u00F6r Yaz\u0131l\u0131m\u0131",
+      "TaskName": "Akıllı Depo RFID & Sensör Yazılımı",
       "AssigneeId": 3,
       "DurationDays": 22,
       "ProgressPercent": 50,
-      "PredecessorTaskIds": [
-        2
-      ],
+      "PredecessorTaskIds": [2],
       "EarlyStart": 20,
       "EarlyFinish": 42,
       "LateStart": 20,
@@ -162,14 +156,11 @@
     {
       "Id": 7,
       "ProjectId": 1,
-      "TaskName": "Depo Sens\u00F6r Altyap\u0131s\u0131 Donan\u0131m Montaj\u0131",
+      "TaskName": "Depo Sensör Altyapısı Donanım Montajı",
       "AssigneeId": 3,
       "DurationDays": 10,
       "ProgressPercent": 10,
-      "PredecessorTaskIds": [
-        4,
-        6
-      ],
+      "PredecessorTaskIds": [4, 6],
       "EarlyStart": 42,
       "EarlyFinish": 52,
       "LateStart": 42,
@@ -180,14 +171,11 @@
     {
       "Id": 8,
       "ProjectId": 1,
-      "TaskName": "Sistem Entegrasyonu \u0026 Pilot Denemeler",
+      "TaskName": "Sistem Entegrasyonu & Pilot Denemeler",
       "AssigneeId": 2,
       "DurationDays": 7,
       "ProgressPercent": 0,
-      "PredecessorTaskIds": [
-        5,
-        7
-      ],
+      "PredecessorTaskIds": [5, 7],
       "EarlyStart": 52,
       "EarlyFinish": 59,
       "LateStart": 52,
@@ -198,13 +186,11 @@
     {
       "Id": 9,
       "ProjectId": 1,
-      "TaskName": "Kabul Testleri \u0026 Kapan\u0131\u015F Raporlamas\u0131",
+      "TaskName": "Kabul Testleri & Kapanış Raporlaması",
       "AssigneeId": 1,
       "DurationDays": 4,
       "ProgressPercent": 0,
-      "PredecessorTaskIds": [
-        8
-      ],
+      "PredecessorTaskIds": [8],
       "EarlyStart": 59,
       "EarlyFinish": 63,
       "LateStart": 59,
@@ -215,7 +201,7 @@
     {
       "Id": 10,
       "ProjectId": 1,
-      "TaskName": "Tasarim Iyilestirmesi",
+      "TaskName": "Tasarım İyileştirmesi & Dokümantasyon",
       "AssigneeId": null,
       "DurationDays": 5,
       "ProgressPercent": 20,
@@ -235,17 +221,17 @@
       "Type": "Gelir",
       "Amount": 800000,
       "Category": "Sermaye",
-      "Date": "2026-05-17T16:34:05.2355546+03:00",
-      "Description": "Kurucu ortaklar nakdi sermaye aktar\u0131m\u0131"
+      "Date": "2026-05-17T00:00:00",
+      "Description": "Kurucu ortaklar nakdi sermaye aktarımı"
     },
     {
       "Id": 2,
       "ProjectId": 1,
       "Type": "Gelir",
       "Amount": 400000,
-      "Category": "Hibe Deste\u011Fi",
-      "Date": "2026-05-26T16:34:05.23564+03:00",
-      "Description": "KOSGEB / T\u00DCB\u0130TAK Proje 1. d\u00F6nem Ar-Ge deste\u011Fi"
+      "Category": "Hibe Desteği",
+      "Date": "2026-05-26T00:00:00",
+      "Description": "KOSGEB / TÜBİTAK Proje 1. dönem Ar-Ge desteği"
     },
     {
       "Id": 3,
@@ -253,25 +239,25 @@
       "Type": "Gider",
       "Amount": 280000,
       "Category": "Ekipman",
-      "Date": "2026-05-27T16:34:05.2356409+03:00",
-      "Description": "Cam astarl\u0131 reakt\u00F6r ithalat bedeli"
+      "Date": "2026-05-27T00:00:00",
+      "Description": "Cam astarlı reaktör ithalat bedeli"
     },
     {
       "Id": 4,
       "ProjectId": 1,
       "Type": "Gider",
       "Amount": 95000,
-      "Category": "Altyap\u0131",
-      "Date": "2026-05-31T16:34:05.2356413+03:00",
-      "Description": "Tesis zemin epoksi kaplama ve havaland\u0131rma i\u015Fleri"
+      "Category": "Altyapı",
+      "Date": "2026-05-31T00:00:00",
+      "Description": "Tesis zemin epoksi kaplama ve havalandırma işleri"
     },
     {
       "Id": 5,
       "ProjectId": 1,
       "Type": "Gider",
       "Amount": 45000,
-      "Category": "Yaz\u0131l\u0131m \u0026 Lisans",
-      "Date": "2026-06-02T16:34:05.2356416+03:00",
+      "Category": "Yazılım & Lisans",
+      "Date": "2026-06-02T00:00:00",
       "Description": "RFID entegrasyonu ve bulut lisans bedeli"
     },
     {
@@ -280,17 +266,17 @@
       "Type": "Gider",
       "Amount": 65000,
       "Category": "Hammadde",
-      "Date": "2026-06-05T16:34:05.2356426+03:00",
-      "Description": "Deneme \u00FCretimi i\u00E7in \u00F6n hammadde tedariki"
+      "Date": "2026-06-05T00:00:00",
+      "Description": "Deneme üretimi için ön hammadde tedariki"
     },
     {
       "Id": 7,
       "ProjectId": 1,
       "Type": "Gider",
       "Amount": 5000,
-      "Category": "Yazilim",
-      "Date": "2026-06-10T16:35:37.4576743+03:00",
-      "Description": "Ek Sunucu Lisansi"
+      "Category": "Yazılım & Lisans",
+      "Date": "2026-06-10T00:00:00",
+      "Description": "Ek Sunucu Lisansı"
     }
   ]
 }

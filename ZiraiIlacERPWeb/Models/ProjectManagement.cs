@@ -25,6 +25,7 @@ namespace ZiraiIlacERPWeb.Models
         public string Phone { get; set; }
         public string Avatar { get; set; }
         public string Specialty { get; set; }
+        public double DailySalary { get; set; } // Günlük maaş (TL)
     }
 
     public class ProjectTask
