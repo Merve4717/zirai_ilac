@@ -264,6 +264,9 @@
         font-weight: 700;
         border-bottom: 2px solid var(--db-border);
         white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     .db-table td {
@@ -623,9 +626,10 @@
     </div>
 
     <div class="db-tabs">
-        <button class="db-tab-btn active" onclick="switchSection('editor')">⌨️ SQL Editörü</button>
-        <button class="db-tab-btn" onclick="switchSection('schema')">🏗️ Şema Görünümü</button>
-        <button class="db-tab-btn" onclick="switchSection('saved')">💾 Kayıtlı Sorgular</button>
+        <button class="db-tab-btn active" id="tab-btn-editor" onclick="switchSection('editor')">⌨️ SQL Editörü</button>
+        <button class="db-tab-btn" id="tab-btn-schema" onclick="switchSection('schema')">🏗️ Şema Görünümü</button>
+        <button class="db-tab-btn" id="tab-btn-saved" onclick="switchSection('saved')">💾 Kayıtlı Sorgular</button>
+        <button class="db-tab-btn" id="tab-btn-browse" onclick="switchSection('browse')" style="display: none;">📂 Tablo Tarayıcı</button>
     </div>
 
     <!-- 1. SQL EDITOR SECTION -->
@@ -701,6 +705,25 @@
             <!-- Loaded from localStorage -->
         </div>
     </div>
+
+    <!-- 4. TABLE BROWSER SECTION -->
+    <div id="sec-browse" class="db-section-content" style="display: none;">
+        <div style="padding: 10px 20px 20px;">
+            <div class="db-glass-panel" style="margin-bottom: 0;">
+                <div class="db-header">
+                    <h3 id="browse-table-title" style="font-size: 1.15rem; font-weight: 700; color: var(--db-gold); margin: 0;">Tablo: —</h3>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="browse-search-input" class="db-input" placeholder="🔍 Tabloda filtrele..." oninput="filterBrowseTable()" style="width: 220px; font-size: 0.8rem; padding: 6px 12px;">
+                        <button class="btn-db btn-db-ghost btn-db-sm" onclick="exportBrowseData('csv')">⬇️ CSV İndir</button>
+                        <button class="btn-db btn-db-ghost btn-db-sm" onclick="exportBrowseData('json')">⬇️ JSON İndir</button>
+                    </div>
+                </div>
+                <div class="result-table-wrapper" id="browse-table-area">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL: SAVE QUERY -->
@@ -748,6 +771,7 @@
 
     let liveSchema = null;
     let lastActiveResult = null;
+    let lastBrowseData = null; // Store current table browse data for client-side search
 
     // LOCAL STORAGE BACKED SAVED QUERIES
     const defaultSavedQueries = [
@@ -768,7 +792,15 @@
         document.querySelectorAll('.db-tab-btn').forEach(btn => btn.classList.remove('active'));
         
         document.getElementById('sec-' + secId).style.display = 'block';
-        event.currentTarget.classList.add('active');
+        
+        const activeBtn = document.getElementById('tab-btn-' + secId);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+
+        if (secId !== 'browse') {
+            document.getElementById('tab-btn-browse').style.display = 'none';
+        }
 
         if (secId === 'schema') {
             renderSchemaGrid();
@@ -781,7 +813,10 @@
     async function loadSchema() {
         try {
             const res = await fetch('@Url.Action("GetSchema", "DatabaseManager")');
-            if (!res.ok) throw new Error("Şema yüklenirken hata oluştu.");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || "Şema yüklenirken hata oluştu.");
+            }
             liveSchema = await res.json();
             renderSidebarTables();
             if (document.getElementById('sec-schema').style.display !== 'none') {
@@ -800,7 +835,7 @@
         let html = '';
         for (const [tbl, meta] of Object.entries(liveSchema)) {
             html += `
-                <div class="db-table-item" onclick="insertTableSelect('${tbl}')">
+                <div class="db-table-item" onclick="browseTable('${tbl}')">
                     <span>${meta.icon} ${meta.label}</span>
                     <span class="db-table-count">${meta.rows}</span>
                 </div>
@@ -809,7 +844,147 @@
         list.innerHTML = html;
     }
 
-    // INSERT SELECT SNIPPET ON TABLE CLICK
+    // BROWSE A TABLE DIRECTLY
+    async function browseTable(tableName) {
+        if (!liveSchema || !liveSchema[tableName]) return;
+        const meta = liveSchema[tableName];
+
+        const tabBtn = document.getElementById('tab-btn-browse');
+        tabBtn.textContent = `📂 Tarayıcı: ${meta.label}`;
+        tabBtn.style.display = 'inline-flex';
+
+        switchSection('browse');
+
+        document.getElementById('browse-table-title').textContent = `${meta.icon} ${meta.label} (${tableName})`;
+        document.getElementById('browse-search-input').value = '';
+        
+        const container = document.getElementById('browse-table-area');
+        container.innerHTML = `<div style="padding:40px; text-align:center; color:var(--db-text-muted);"><span class="spinner-border spinner-border-sm text-success" role="status"></span> Veriler yükleniyor...</div>`;
+
+        try {
+            const res = await fetch('@Url.Action("ExecuteQuery", "DatabaseManager")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sql: `SELECT * FROM [${tableName}];` })
+            });
+            if (!res.ok) throw new Error("Veriler çekilemedi.");
+            const data = await res.json();
+
+            if (!data.success) {
+                container.innerHTML = `<div style="padding:16px; color:#ef4444; font-family:monospace; font-size:0.85rem;">❌ Hata:<br>${data.message}</div>`;
+                return;
+            }
+
+            lastBrowseData = {
+                tableName: tableName,
+                columns: data.columns,
+                values: data.values
+            };
+
+            renderBrowseTable(data.columns, data.values);
+        } catch (err) {
+            container.innerHTML = `<div style="padding:16px; color:#ef4444; font-family:monospace; font-size:0.85rem;">❌ Hata:<br>${err.message}</div>`;
+        }
+    }
+
+    function renderBrowseTable(cols, vals) {
+        const container = document.getElementById('browse-table-area');
+        if (vals.length === 0) {
+            container.innerHTML = `<div style="padding:40px; text-align:center; color:var(--db-text-muted);">Tabloda kayıt bulunmuyor.</div>`;
+            return;
+        }
+
+        let html = `<table class="db-table"><thead><tr>`;
+        cols.forEach(c => { html += `<th>${c}</th>`; });
+        html += `</tr></thead><tbody>`;
+
+        vals.forEach(row => {
+            html += `<tr>`;
+            row.forEach(v => {
+                if (v === null || v === undefined) {
+                    html += `<td><span class="null-cell">NULL</span></td>`;
+                } else if (typeof v === 'number') {
+                    html += `<td style="color:#60a5fa; font-weight:600;">${v}</td>`;
+                } else if (typeof v === 'string' && v.match(/^\d{4}-\d{2}-\d{2}/)) {
+                    html += `<td style="color:#d97706;">${v.substring(0, 10)}</td>`;
+                } else {
+                    html += `<td>${escapeHtml(v.toString())}</td>`;
+                }
+            });
+            html += `</tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    // SEARCH FILTER IN BROWSE
+    function filterBrowseTable() {
+        if (!lastBrowseData) return;
+        const searchVal = document.getElementById('browse-search-input').value.toLowerCase().trim();
+        
+        if (!searchVal) {
+            renderBrowseTable(lastBrowseData.columns, lastBrowseData.values);
+            return;
+        }
+
+        const filteredValues = lastBrowseData.values.filter(row => {
+            return row.some(cell => {
+                if (cell === null || cell === undefined) return false;
+                return cell.toString().toLowerCase().includes(searchVal);
+            });
+        });
+
+        renderBrowseTable(lastBrowseData.columns, filteredValues);
+    }
+
+    // EXPORT FROM BROWSE
+    function exportBrowseData(format) {
+        if (!lastBrowseData) return;
+        
+        // Export currently filtered rows
+        const searchVal = document.getElementById('browse-search-input').value.toLowerCase().trim();
+        let exportVals = lastBrowseData.values;
+        if (searchVal) {
+            exportVals = lastBrowseData.values.filter(row => {
+                return row.some(cell => {
+                    if (cell === null || cell === undefined) return false;
+                    return cell.toString().toLowerCase().includes(searchVal);
+                });
+            });
+        }
+
+        const { columns } = lastBrowseData;
+
+        if (format === 'csv') {
+            const csvRows = [];
+            csvRows.push(columns.join(','));
+            exportVals.forEach(row => {
+                const mappedRow = row.map(val => {
+                    if (val === null || val === undefined) return '';
+                    let strVal = val.toString();
+                    if (strVal.includes(',') || strVal.includes('"') || strVal.includes('\n')) {
+                        strVal = `"${strVal.replace(/"/g, '""')}"`;
+                    }
+                    return strVal;
+                });
+                csvRows.push(mappedRow.join(','));
+            });
+            downloadBlob(csvRows.join('\n'), `${lastBrowseData.tableName}_dump.csv`, 'text/csv');
+        } else if (format === 'json') {
+            const formatted = exportVals.map(row => {
+                let obj = {};
+                columns.forEach((col, idx) => {
+                    obj[col] = row[idx];
+                });
+                return obj;
+            });
+            downloadBlob(JSON.stringify(formatted, null, 2), `${lastBrowseData.tableName}_dump.json`, 'application/json');
+        }
+        showToast(`📥 Veriler ${format.toUpperCase()} olarak indirildi`, "ok");
+    }
+
+    // INSERT SELECT SNIPPET ON TABLE CLICK (FALLBACK)
     function insertTableSelect(tblName) {
         const sql = `SELECT * FROM ${tblName};`;
         document.getElementById('sql-editor-area').value = sql;
@@ -1028,9 +1203,9 @@
         for (const [tbl, meta] of Object.entries(liveSchema)) {
             html += `
                 <div class="schema-card">
-                    <div class="schema-card-header">
+                    <div class="schema-card-header" style="cursor: pointer;" onclick="browseTable('${tbl}')" title="Tabloyu tara">
                         <span>${meta.icon} ${meta.label} (${tbl})</span>
-                        <span style="font-size: 0.72rem; opacity: 0.8;">${meta.rows} satır</span>
+                        <span style="font-size: 0.72rem; opacity: 0.8; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 10px;">${meta.rows} satır</span>
                     </div>
                     <div class="schema-cols-list">
             `;

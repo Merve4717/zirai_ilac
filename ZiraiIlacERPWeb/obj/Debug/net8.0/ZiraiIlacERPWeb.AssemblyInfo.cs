@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ZiraiIlacERPWeb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f204d74e81e2786a9711d51e33a931ef53107ded")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d6b7cb29bae85458282e75936e2e83da5b7c4b7e")]
 [assembly: System.Reflection.AssemblyProductAttribute("ZiraiIlacERPWeb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ZiraiIlacERPWeb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

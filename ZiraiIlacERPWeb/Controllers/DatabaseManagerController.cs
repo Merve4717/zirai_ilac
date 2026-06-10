@@ -34,7 +34,7 @@ namespace ZiraiIlacERPWeb.Controllers
                     await connection.OpenAsync();
                 }
 
-                // 1. Get Row Counts
+                // 1. Get Row Counts safely
                 var rowCounts = new Dictionary<string, long>();
                 using (var cmd = connection.CreateCommand())
                 {
@@ -53,13 +53,13 @@ namespace ZiraiIlacERPWeb.Controllers
                         while (await reader.ReadAsync())
                         {
                             var tableName = reader.GetString(0);
-                            var count = reader.GetInt64(1); // Sum returns BIGINT or INT depending on partitions, get decimal/int64
+                            var count = Convert.ToInt64(reader.GetValue(1));
                             rowCounts[tableName] = count;
                         }
                     }
                 }
 
-                // 2. Get Columns and Metadata
+                // 2. Get Columns and Metadata safely
                 var schemaData = new Dictionary<string, object>();
                 using (var cmd = connection.CreateCommand())
                 {
@@ -69,10 +69,10 @@ namespace ZiraiIlacERPWeb.Controllers
                             c.name AS ColumnName, 
                             ty.name AS DataType,
                             c.is_nullable AS IsNullable,
-                            ISNULL((SELECT 1 FROM sys.index_columns ic 
+                            ISNULL((SELECT TOP 1 1 FROM sys.index_columns ic 
                                     JOIN sys.indexes i ON ic.object_id = i.object_id AND ic.index_id = i.index_id
                                     WHERE ic.object_id = t.object_id AND ic.column_id = c.column_id AND i.is_primary_key = 1), 0) AS IsPrimaryKey,
-                            ISNULL((SELECT rt.name + '.' + rc.name
+                            ISNULL((SELECT TOP 1 rt.name + '.' + rc.name
                                     FROM sys.foreign_key_columns fkc
                                     JOIN sys.foreign_keys fk ON fkc.constraint_object_id = fk.object_id
                                     JOIN sys.tables rt ON fkc.referenced_object_id = rt.object_id
@@ -94,7 +94,7 @@ namespace ZiraiIlacERPWeb.Controllers
                             var columnName = reader.GetString(1);
                             var dataType = reader.GetString(2);
                             var isNullable = reader.GetBoolean(3);
-                            var isPrimaryKey = reader.GetInt32(4) == 1;
+                            var isPrimaryKey = Convert.ToInt32(reader.GetValue(4)) == 1;
                             var foreignKeyInfo = reader.GetString(5);
 
                             if (tableName != currentTable)
@@ -150,7 +150,7 @@ namespace ZiraiIlacERPWeb.Controllers
         {
             if (string.IsNullOrWhiteSpace(request?.Sql))
             {
-                return Json(new { message = "Sorgu boş olamaz." });
+                return Json(new { success = false, message = "Sorgu boş olamaz." });
             }
 
             var sql = request.Sql.Trim();
@@ -169,10 +169,7 @@ namespace ZiraiIlacERPWeb.Controllers
                     cmd.CommandText = sql;
 
                     // If it is a SELECT query (or similar that returns a result set)
-                    if (sql.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) || 
-                        sql.StartsWith("WITH", StringComparison.OrdinalIgnoreCase) || 
-                        sql.StartsWith("PRAGMA", StringComparison.OrdinalIgnoreCase) ||
-                        sql.StartsWith("SHOW", StringComparison.OrdinalIgnoreCase))
+                    if (IsSelectQuery(sql))
                     {
                         using (var reader = await cmd.ExecuteReaderAsync())
                         {
@@ -237,6 +234,34 @@ namespace ZiraiIlacERPWeb.Controllers
                     elapsedMs = timer.ElapsedMilliseconds
                 });
             }
+        }
+
+        private bool IsSelectQuery(string sql)
+        {
+            if (string.IsNullOrWhiteSpace(sql)) return false;
+
+            // Remove comments and whitespace
+            var lines = sql.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var cleanedSql = "";
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.Trim();
+                // Skip single-line comments
+                if (trimmedLine.StartsWith("--") || trimmedLine.StartsWith("//"))
+                {
+                    continue;
+                }
+                cleanedSql += " " + trimmedLine;
+            }
+
+            cleanedSql = cleanedSql.Trim();
+
+            // Detect if first word matches select keywords
+            return cleanedSql.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) ||
+                   cleanedSql.StartsWith("WITH", StringComparison.OrdinalIgnoreCase) ||
+                   cleanedSql.StartsWith("SHOW", StringComparison.OrdinalIgnoreCase) ||
+                   cleanedSql.StartsWith("EXPLAIN", StringComparison.OrdinalIgnoreCase) ||
+                   cleanedSql.StartsWith("PRAGMA", StringComparison.OrdinalIgnoreCase);
         }
     }
 
