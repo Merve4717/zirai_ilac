@@ -7,6 +7,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ERPDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddSingleton<ZiraiIlacERPWeb.Services.ProjectManagementService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,969 @@
+@model ZiraiIlacERPWeb.Models.ProjectDataWrapper
+@{
+    ViewData["Title"] = "Proje Yönetimi";
+    var project = Model.Project;
+    var totalTasks = Model.Tasks.Count;
+    var completedTasks = Model.Tasks.Count(t => t.ProgressPercent == 100);
+    var criticalTasks = Model.Tasks.Count(t => t.IsCritical);
+    var projectDuration = Model.Tasks.Count > 0 ? Model.Tasks.Max(t => t.EarlyFinish) : 0;
+    
+    var totalIncomes = Model.Transactions.Where(t => t.Type == "Gelir").Sum(t => t.Amount);
+    var totalExpenses = Model.Transactions.Where(t => t.Type == "Gider").Sum(t => t.Amount);
+    var currentBalance = totalIncomes - totalExpenses;
+    var budgetUsagePercent = project.Budget > 0 ? (totalExpenses / project.Budget) * 100 : 0;
+}
+
+<style>
+    /* PROJECT MANAGEMENT PANEL CUSTOM STYLES */
+    .pm-nav-tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 24px;
+        padding-bottom: 8px;
+    }
+
+    .pm-tab-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-secondary);
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pm-tab-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+
+    .pm-tab-btn.active {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--accent-emerald);
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .pm-section {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .pm-section.active {
+        display: block;
+    }
+
+    /* METRIC CARDS */
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .metric-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: var(--glass-shadow);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .metric-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+    }
+
+    .metric-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--accent-emerald);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .metric-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .metric-label {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-top: 2px;
+    }
+
+    /* GANTT CHART */
+    .gantt-container {
+        background: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        overflow-x: auto;
+        box-shadow: var(--glass-shadow);
+    }
+
+    .gantt-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+    }
+
+    .gantt-chart-wrapper {
+        min-width: 800px;
+        position: relative;
+    }
+
+    .gantt-timeline {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        color: var(--accent-gold);
+    }
+
+    .gantt-days {
+        display: flex;
+        position: relative;
+        justify-content: space-between;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .gantt-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        position: relative;
+    }
+
+    .gantt-row:hover {
+        background: rgba(255,255,255,0.01);
+    }
+
+    .gantt-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 15px;
+    }
+
+    .gantt-bar-area {
+        position: relative;
+        height: 28px;
+        background: rgba(255,255,255,0.02);
+        border-radius: 4px;
+    }
+
+    .gantt-bar {
+        position: absolute;
+        height: 100%;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        font-size: 0.72rem;
+        color: white;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .gantt-bar-normal {
+        background: linear-gradient(90deg, #10b981, #059669);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .gantt-bar-critical {
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        animation: pulseBorder 2s infinite;
+    }
+
+    .gantt-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+        pointer-events: none;
+    }
+
+    /* TEAM CARDS */
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+    }
+
+    .team-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
+        transition: all 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .team-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-4px);
+    }
+
+    .team-avatar {
+        width: 64px;
+        height: 64px;
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--accent-emerald);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin-bottom: 16px;
+        border: 2px solid var(--border-color);
+    }
+
+    .team-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .team-role {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+
+    .team-info-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .team-info-row:last-child {
+        border-bottom: none;
+    }
+
+    /* MODAL AND FORMS */
+    .pm-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: var(--backdrop-blur);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .pm-modal.open {
+        display: flex;
+    }
+
+    .pm-modal-content {
+        background: #06120b;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: var(--glass-shadow);
+        overflow: hidden;
+        animation: scaleUp 0.25s ease-out;
+    }
+
+    @@keyframes scaleUp {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @@keyframes pulseBorder {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+</style>
+
+<div class="db-manager-container">
+    <div class="db-header">
+        <h2 class="db-title">📊 Proje Yönetimi ve İş Akışı Paneli</h2>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-db btn-db-sm btn-db-gold" onclick="openModal('modal-project-meta')">✏️ Proje Detayları</button>
+            <span style="background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; font-weight: 700; display: flex; align-items:center;">
+                📌 Statü: @project.Status
+            </span>
+        </div>
+    </div>
+
+    <!-- PROJECT METRIC BARS -->
+    <div class="db-glass-panel" style="padding: 20px; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight:700; font-size:0.9rem;">
+            <span>🚀 Proje: <strong style="color:var(--accent-gold)">@project.Name</strong></span>
+            <span style="color:var(--accent-emerald)">@project.Progress% Tamamlandı</span>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); height: 10px; border-radius: 5px; overflow:hidden;">
+            <div style="background: linear-gradient(90deg, var(--accent-emerald), #34d399); width: @project.Progress%; height:100%; border-radius:5px; transition: width 0.5s ease;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.75rem; color:var(--text-secondary)">
+            <span>Başlangıç: @project.StartDate.ToString("dd.MM.yyyy")</span>
+            <span>Öngörülen Bitiş: @project.EndDate.ToString("dd.MM.yyyy")</span>
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-secondary); margin-top:10px; border-top:1px solid rgba(255,255,255,0.03); padding-top:10px;">
+            📄 <strong>Proje Tanımı:</strong> @project.Description
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="pm-nav-tabs">
+        <button class="pm-tab-btn active" id="tab-btn-dashboard" onclick="switchTab('dashboard')">📈 Genel Durum</button>
+        <button class="pm-tab-btn" id="tab-btn-gantt" onclick="switchTab('gantt')">📅 Gantt Şeması</button>
+        <button class="pm-tab-btn" id="tab-btn-cpm" onclick="switchTab('cpm')">🏗️ Görevler ve CPM</button>
+        <button class="pm-tab-btn" id="tab-btn-team" onclick="switchTab('team')">👥 Proje Ekibi</button>
+        <button class="pm-tab-btn" id="tab-btn-capital" onclick="switchTab('capital')">💰 Bütçe ve Sermaye</button>
+        <button class="pm-tab-btn" id="tab-btn-reports" onclick="switchTab('reports')">📋 Raporlar</button>
+    </div>
+
+    <!-- 1. DASHBOARD TAB -->
+    <div id="sec-dashboard" class="pm-section active">
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-icon">🚀</div>
+                <div class="metric-info">
+                    <span class="metric-label">Toplam Görev</span>
+                    <span class="metric-value">@totalTasks</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background:rgba(16, 185, 129, 0.12); color:var(--accent-emerald)">✅</div>
+                <div class="metric-info">
+                    <span class="metric-label">Tamamlanan</span>
+                    <span class="metric-value">@completedTasks</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background:rgba(239, 68, 68, 0.12); color:#ef4444">⚡</div>
+                <div class="metric-info">
+                    <span class="metric-label">Kritik Görev</span>
+                    <span class="metric-value">@criticalTasks</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background:rgba(245, 158, 11, 0.12); color:var(--accent-gold)">⏱️</div>
+                <div class="metric-info">
+                    <span class="metric-label">En Kısa Süre (CPM)</span>
+                    <span class="metric-value">@projectDuration Gün</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:24px;">
+            <div class="db-glass-panel" style="padding:24px;">
+                <h3 class="premium-card-title">💵 Sermaye ve Bütçe Dengesi</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin: 15px 0;">
+                    <div style="background:rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.1); padding:16px; border-radius:8px;">
+                        <div style="font-size:0.75rem; color:var(--text-secondary)">TOPLAM SERMAYE</div>
+                        <div style="font-size:1.4rem; font-weight:800; color:var(--accent-emerald);">@totalIncomes.ToString("N2") TL</div>
+                    </div>
+                    <div style="background:rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.1); padding:16px; border-radius:8px;">
+                        <div style="font-size:0.75rem; color:var(--text-secondary)">HARCANAN BÜTÇE</div>
+                        <div style="font-size:1.4rem; font-weight:800; color:#ef4444;">@totalExpenses.ToString("N2") TL</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem; font-weight:600;">
+                        <span>Proje Bütçe Kullanımı: @project.Budget.ToString("N0") TL</span>
+                        <span style="color:var(--accent-gold);">@budgetUsagePercent.ToString("N1")% Kullanıldı</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow:hidden;">
+                        <div style="background: var(--accent-gold); width: @(budgetUsagePercent > 100 ? 100 : budgetUsagePercent)%; height:100%; border-radius:4px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="db-glass-panel" style="padding:24px;">
+                <h3 class="premium-card-title">📊 Proje Finansal Durumu</h3>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-top:15px;">
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <span>💰 Öngörülen Proje Bütçesi:</span>
+                        <span style="font-weight:700; color:var(--text-primary);">@project.Budget.ToString("N2") TL</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <span>💼 Aktif Kasa Sermayesi:</span>
+                        <span style="font-weight:700; color:var(--accent-emerald);">@project.Capital.ToString("N2") TL</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <span>📥 Alınan Toplam Destek/Gelir:</span>
+                        <span style="font-weight:700; color:var(--accent-emerald);">@totalIncomes.ToString("N2") TL</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                        <span>📤 Net Kasa Bakiyesi (Gelir-Gider):</span>
+                        <span style="font-weight:700; color: @(currentBalance >= 0 ? "var(--accent-emerald)" : "#ef4444");">
+                            @currentBalance.ToString("N2") TL
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. GANTT CHART TAB -->
+    <div id="sec-gantt" class="pm-section">
+        <div class="gantt-container">
+            <div class="gantt-header">
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-gold); margin: 0;">📅 Gantt Zaman Çizelgesi</h3>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary);">Erken başlama ve erken bitiş zamanlarına göre planlama</span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn-db btn-db-sm btn-db-emerald" onclick="toggleGanttView('task')">📋 Göreve Göre</button>
+                    <button class="btn-db btn-db-sm btn-db-ghost" onclick="toggleGanttView('team')">👥 Ekibe Göre</button>
+                </div>
+            </div>
+
+            <!-- GÖREVE GÖRE GANTT -->
+            <div id="gantt-task-view" class="gantt-chart-wrapper">
+                <div class="gantt-timeline">
+                    <span>Görev Tanımı</span>
+                    <div class="gantt-days">
+                        @for (int i = 0; i <= projectDuration; i += Math.Max(1, projectDuration / 10))
+                        {
+                            <span style="position: absolute; left: @((double)i / projectDuration * 95)%;">@i. Gün</span>
+                        }
+                    </div>
+                </div>
+
+                @foreach (var task in Model.Tasks.OrderBy(t => t.EarlyStart))
+                {
+                    var member = Model.Team.FirstOrDefault(m => m.Id == task.AssigneeId);
+                    double barLeft = projectDuration > 0 ? ((double)task.EarlyStart / projectDuration) * 98 : 0;
+                    double barWidth = projectDuration > 0 ? ((double)task.DurationDays / projectDuration) * 98 : 0;
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label" title="@task.TaskName">
+                            @if (task.IsCritical)
+                            {
+                                <span style="color:#ef4444; font-weight:bold;">⚠️</span>
+                            }
+                            @task.TaskName
+                        </div>
+                        <div class="gantt-bar-area">
+                            <div class="gantt-bar @(task.IsCritical ? "gantt-bar-critical" : "gantt-bar-normal")" 
+                                 style="left: @barLeft.ToString("F2")%; width: @barWidth.ToString("F2")%;" 
+                                 title="Süre: @task.DurationDays Gün (Gün @task.EarlyStart - @task.EarlyFinish)">
+                                <div class="gantt-progress" style="width: @task.ProgressPercent%;"></div>
+                                <span style="position: relative; z-index: 2; margin-left: 6px;">
+                                    @(member != null ? member.Name : "Atanmadı") (@task.ProgressPercent%)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- EKİBE GÖRE GANTT (İş Yükü Çizelgesi) -->
+            <div id="gantt-team-view" class="gantt-chart-wrapper" style="display: none;">
+                <div class="gantt-timeline">
+                    <span>Ekip Üyesi</span>
+                    <div class="gantt-days">
+                        @for (int i = 0; i <= projectDuration; i += Math.Max(1, projectDuration / 10))
+                        {
+                            <span style="position: absolute; left: @((double)i / projectDuration * 95)%;">@i. Gün</span>
+                        }
+                    </div>
+                </div>
+
+                @foreach (var member in Model.Team)
+                {
+                    var memberTasks = Model.Tasks.Where(t => t.AssigneeId == member.Id).ToList();
+                    
+                    <div class="gantt-row" style="height: auto; min-height: 48px;">
+                        <div class="gantt-label">
+                            <span style="font-size:1.1rem; margin-right:4px;">@member.Avatar</span><strong>@member.Name</strong>
+                            <div style="font-size:0.7rem; color:var(--text-secondary);">@member.Role</div>
+                        </div>
+                        <div class="gantt-bar-area" style="height: auto; min-height: 36px; padding: 4px 0;">
+                            @if (memberTasks.Count == 0)
+                            {
+                                <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic; padding-left:10px;">Boşta (Görev Atanmadı)</span>
+                            }
+                            else
+                            {
+                                foreach (var task in memberTasks)
+                                {
+                                    double barLeft = projectDuration > 0 ? ((double)task.EarlyStart / projectDuration) * 98 : 0;
+                                    double barWidth = projectDuration > 0 ? ((double)task.DurationDays / projectDuration) * 98 : 0;
+                                    
+                                    <div class="gantt-bar @(task.IsCritical ? "gantt-bar-critical" : "gantt-bar-normal")" 
+                                         style="left: @barLeft.ToString("F2")%; width: @barWidth.ToString("F2")%; height: 28px; line-height:28px;" 
+                                         title="@task.TaskName (Gün @task.EarlyStart - @task.EarlyFinish)">
+                                        <div class="gantt-progress" style="width: @task.ProgressPercent%;"></div>
+                                        <span style="position: relative; z-index: 2; margin-left: 6px; font-size: 0.68rem; text-overflow: ellipsis; overflow:hidden;">
+                                            @task.TaskName (@task.ProgressPercent%)
+                                        </span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. TASKS & CPM TAB -->
+    <div id="sec-cpm" class="pm-section">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+            <button class="btn-db btn-db-emerald" onclick="openModal('modal-add-task')">➕ Yeni Görev Ekle</button>
+        </div>
+
+        <div class="premium-table-container">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Görev Adı</th>
+                        <th>Sorumlu</th>
+                        <th>Süre</th>
+                        <th>İlerleme</th>
+                        <th>Öncüller</th>
+                        <th>ES (Erken Başlama)</th>
+                        <th>EF (Erken Bitiş)</th>
+                        <th>LS (Geç Başlama)</th>
+                        <th>LF (Geç Bitiş)</th>
+                        <th>Bolluk (Slack)</th>
+                        <th>Kritik Yol</th>
+                        <th style="width:50px;">Aksiyon</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in Model.Tasks.OrderBy(t => t.Id))
+                    {
+                        var member = Model.Team.FirstOrDefault(m => m.Id == task.AssigneeId);
+                        
+                        <tr>
+                            <td style="font-weight: bold; color: var(--accent-gold);">#@task.Id</td>
+                            <td>
+                                @if (task.IsCritical)
+                                {
+                                    <span style="color:#ef4444; font-weight:bold; margin-right:4px;" title="Kritik Görev">⚠️</span>
+                                }
+                                <strong style="@(task.IsCritical ? "color:#f87171;" : "color:var(--text-primary);")">@task.TaskName</strong>
+                            </td>
+                            <td>@(member != null ? $"{member.Avatar} {member.Name}" : "—")</td>
+                            <td><strong>@task.DurationDays</strong> Gün</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-size:0.75rem; min-width:30px;">@task.ProgressPercent%</span>
+                                    <div style="background: rgba(255,255,255,0.05); height: 6px; width: 60px; border-radius: 3px; overflow:hidden;">
+                                        <div style="background: var(--accent-emerald); width: @task.ProgressPercent%; height:100%;"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @(task.PredecessorTaskIds.Count > 0 ? string.Join(", ", task.PredecessorTaskIds.Select(id => $"#{id}")) : "Yok")
+                            </td>
+                            <td style="text-align:center;">@task.EarlyStart</td>
+                            <td style="text-align:center;">@task.EarlyFinish</td>
+                            <td style="text-align:center;">@task.LateStart</td>
+                            <td style="text-align:center;">@task.LateFinish</td>
+                            <td style="text-align:center; font-weight:bold; color: @(task.Slack == 0 ? "#ef4444" : "var(--accent-emerald)");">
+                                @task.Slack
+                            </td>
+                            <td>
+                                @if (task.IsCritical)
+                                {
+                                    <span class="zirai-badge zirai-badge-danger" style="animation: pulseBorder 2s infinite;">Evet (Kritik)</span>
+                                }
+                                else
+                                {
+                                    <span class="zirai-badge zirai-badge-emerald">Hayır</span>
+                                }
+                            </td>
+                            <td>
+                                <form asp-action="DeleteTask" method="post" onsubmit="return confirm('Görev silinsin mi?');">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button type="submit" class="btn-db btn-db-sm btn-db-red" style="padding: 2px 6px;">🗑️</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. TEAM TAB -->
+    <div id="sec-team" class="pm-section">
+        <div class="team-grid">
+            @foreach (var member in Model.Team)
+            {
+                var tasksCount = Model.Tasks.Count(t => t.AssigneeId == member.Id);
+                var criticalTasksCount = Model.Tasks.Count(t => t.AssigneeId == member.Id && t.IsCritical);
+
+                <div class="team-card">
+                    <div class="team-avatar">@member.Avatar</div>
+                    <div class="team-name">@member.Name</div>
+                    <div class="team-role">@member.Role</div>
+                    <div style="font-size:0.8rem; color:var(--accent-emerald); background:rgba(16,185,129,0.08); padding:3px 10px; border-radius:12px; margin-bottom:15px; border:1px solid rgba(16,185,129,0.15)">
+                        @member.Specialty
+                    </div>
+                    
+                    <div class="team-info-row">
+                        <span>📧 E-Posta:</span>
+                        <span style="color:var(--text-primary);">@member.Email</span>
+                    </div>
+                    <div class="team-info-row">
+                        <span>📞 Telefon:</span>
+                        <span style="color:var(--text-primary);">@member.Phone</span>
+                    </div>
+                    <div class="team-info-row">
+                        <span>📋 Aktif Görev:</span>
+                        <span style="font-weight:700; color:var(--text-primary);">@tasksCount</span>
+                    </div>
+                    <div class="team-info-row">
+                        <span>⚡ Kritik Görev:</span>
+                        <span style="font-weight:700; color:#ef4444;">@criticalTasksCount</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 5. BUDGET AND CAPITAL TAB -->
+    <div id="sec-capital" class="pm-section">
+        <div style="display:grid; grid-template-columns: 1.3fr 1fr; gap:20px;">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-gold); margin: 0;">💵 Gelir-Gider İşlemleri</h3>
+                    <span style="font-size:0.75rem; color:var(--text-secondary)">Kasa hareketleri listesi</span>
+                </div>
+                <div class="premium-table-container" style="margin-top:0; max-height:450px; overflow-y:auto;">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Tür</th>
+                                <th>Kategori</th>
+                                <th>Açıklama</th>
+                                <th style="text-align:right;">Tutar</th>
+                                <th style="width:40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tx in Model.Transactions.OrderByDescending(t => t.Date))
+                            {
+                                <tr>
+                                    <td>@tx.Date.ToString("dd.MM.yyyy")</td>
+                                    <td>
+                                        @if (tx.Type == "Gelir")
+                                        {
+                                            <span class="zirai-badge zirai-badge-emerald">Gelir / Destek</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="zirai-badge zirai-badge-danger">Gider / Ödeme</span>
+                                        }
+                                    </td>
+                                    <td>@tx.Category</td>
+                                    <td title="@tx.Description">@tx.Description</td>
+                                    <td style="text-align:right; font-weight:bold; color: @(tx.Type == "Gelir" ? "var(--accent-emerald)" : "#ef4444");">
+                                        @(tx.Type == "Gelir" ? "+" : "-")@tx.Amount.ToString("N2") TL
+                                    </td>
+                                    <td>
+                                        <form asp-action="DeleteTransaction" method="post" onsubmit="return confirm('Kasa hareketi silinsin mi?');">
+                                            <input type="hidden" name="id" value="@tx.Id" />
+                                            <button type="submit" class="btn-db btn-db-sm btn-db-red" style="padding: 1px 4px; font-size:0.65rem;">🗑️</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="db-glass-panel" style="padding:24px; height:fit-content;">
+                <h3 class="premium-card-title">➕ Yeni Nakit Hareketi Ekle</h3>
+                <form asp-action="AddTransaction" method="post" style="display:flex; flex-direction:column; gap:16px; margin-top:15px;">
+                    <div class="db-input-group">
+                        <label class="premium-form-label">Hareket Türü *</label>
+                        <select name="type" class="db-input premium-input" required>
+                            <option value="Gelir">Gelir (Sermaye/Hibe/Yatırım)</option>
+                            <option value="Gider">Gider (Harcama/Maaş/Ekipman)</option>
+                        </select>
+                    </div>
+                    <div class="db-input-group">
+                        <label class="premium-form-label">Tutar (TL) *</label>
+                        <input type="number" name="amount" step="0.01" class="db-input premium-input" placeholder="Örn: 25000" required />
+                    </div>
+                    <div class="db-input-group">
+                        <label class="premium-form-label">Kategori *</label>
+                        <input type="text" name="category" class="db-input premium-input" placeholder="Örn: Ekipman, Maaş, Hibe" required />
+                    </div>
+                    <div class="db-input-group">
+                        <label class="premium-form-label">Açıklama</label>
+                        <input type="text" name="description" class="db-input premium-input" placeholder="Örn: Ar-Ge sunucu lisansı alımı" />
+                    </div>
+                    <button type="submit" class="btn-premium btn-premium-emerald" style="justify-content:center;">💾 Nakit Hareketini Kaydet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. REPORTS TAB -->
+    <div id="sec-reports" class="pm-section">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div class="db-glass-panel" style="padding:24px;">
+                <h3 class="premium-card-title">📝 Proje Analizi ve Yönetici Raporu</h3>
+                <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px; font-size:0.88rem; line-height:1.6; color:var(--text-secondary)">
+                    <p>
+                        🔍 <strong>Kritik Yol Analizi (CPM):</strong> Projenin planlanan en kısa tamamlanma süresi <strong>@projectDuration gün</strong> olarak hesaplanmıştır. 
+                        Şu anda projede toplam <strong>@Model.Tasks.Count görevden @criticalTasks tanesi</strong> kritik yol (darboğaz) üzerindedir. 
+                        Bu görevlerde yaşanacak herhangi bir gecikme, projenin bitiş tarihini doğrudan erteleyecektir.
+                    </p>
+                    <p>
+                        🚩 <strong>Aktif Kritik Yol Görevleri:</strong><br />
+                        @foreach (var task in Model.Tasks.Where(t => t.IsCritical).OrderBy(t => t.EarlyStart))
+                        {
+                            var member = Model.Team.FirstOrDefault(m => m.Id == task.AssigneeId);
+                            <span>• <strong>#@task.Id @task.TaskName</strong> (Sorumlu: @(member != null ? member.Name : "Atanmadı"), Gün: @task.EarlyStart - @task.EarlyFinish)<br /></span>
+                        }
+                    </p>
+                    <p>
+                        💼 <strong>Sermaye & Finansal Durum Değerlendirmesi:</strong> Toplam sermaye girdisi <strong>@totalIncomes.ToString("N0") TL</strong>, gerçekleşen harcamalar ise <strong>@totalExpenses.ToString("N0") TL</strong>'dir. 
+                        Projenin öngörülen toplam bütçesi olan <strong>@project.Budget.ToString("N0") TL</strong> sınırına göre bütçenin <strong>@budgetUsagePercent.ToString("N1")%</strong> kısmı kullanılmıştır. 
+                        Mevcut finansal bakiye <strong>@currentBalance.ToString("N0") TL</strong> ile proje kasa durumu sağlıklıdır.
+                    </p>
+                </div>
+            </div>
+
+            <div class="db-glass-panel" style="padding:24px;">
+                <h3 class="premium-card-title">🎯 Risk ve Verimlilik İndeksi</h3>
+                <div style="margin-top:20px; display:flex; flex-direction:column; gap:20px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem; font-weight:600;">
+                            <span>Kritik Görev Tamamlanma Oranı</span>
+                            @{
+                                var completedCritical = Model.Tasks.Count(t => t.IsCritical && t.ProgressPercent == 100);
+                                var criticalPercent = criticalTasks > 0 ? ((double)completedCritical / criticalTasks) * 100 : 100;
+                            }
+                            <span style="color:var(--accent-emerald);">@criticalPercent.ToString("N0")%</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow:hidden;">
+                            <div style="background: var(--accent-emerald); width: @criticalPercent%; height:100%;"></div>
+                        </div>
+                        <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:4px; display:block;">Kritik yoldaki görevlerin tamamlanma durumuna göre proje risk derecesi ölçülür.</span>
+                    </div>
+
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.8rem; font-weight:600;">
+                            <span>Proje Zaman/Süre İlerleme Endeksi</span>
+                            @{
+                                var elapsedDays = (DateTime.Now - project.StartDate).Days;
+                                var totalProjDays = (project.EndDate - project.StartDate).Days;
+                                var timeElapsedPercent = totalProjDays > 0 ? ((double)elapsedDays / totalProjDays) * 100 : 0;
+                                if (timeElapsedPercent < 0) timeElapsedPercent = 0;
+                                if (timeElapsedPercent > 100) timeElapsedPercent = 100;
+                            }
+                            <span style="color:var(--accent-gold);">@timeElapsedPercent.ToString("N0")% Zaman Tüketildi</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); height: 8px; border-radius: 4px; overflow:hidden;">
+                            <div style="background: var(--accent-gold); width: @timeElapsedPercent%; height:100%;"></div>
+                        </div>
+                        <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:4px; display:block;">Proje takvim süresinin yüzde kaçının harcandığını gösterir.</span>
+                    </div>
+
+                    <div style="background:rgba(245,158,11,0.04); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:12px; font-size:0.8rem; line-height:1.5; color:var(--accent-gold)">
+                        ℹ️ <strong>Akademik Değerlendirme Notu (Girişimcilik):</strong><br />
+                        CPM Analizi, projenizin "Kritik Yol" üzerindeki işlerini tespit ederek kaynakların verimli atanmasını sağlar. Projede bolluk (slack) süresi sıfır olan işlerin zamanında tamamlanması, toplam girişim bütçe sapmasını önler.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALS -->
+<!-- 1. EDIT PROJECT META MODAL -->
+<div class="pm-modal" id="modal-project-meta">
+    <div class="pm-modal-content">
+        <div class="db-modal-header">
+            <span>✏️ Proje Detaylarını Düzenle</span>
+            <button onclick="closeModal('modal-project-meta')" style="background:transparent; border:none; color:var(--db-text-muted); cursor:pointer; font-size:1.2rem;">✕</button>
+        </div>
+        <form asp-action="UpdateProject" method="post">
+            <div class="db-modal-body">
+                <div class="db-input-group">
+                    <label class="premium-form-label">Proje Adı *</label>
+                    <input type="text" name="name" class="db-input premium-input" value="@project.Name" required />
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Proje Öngörülen Bütçe (TL) *</label>
+                    <input type="number" name="budget" step="0.01" class="db-input premium-input" value="@project.Budget" required />
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Toplam Kasa Sermayesi (TL) *</label>
+                    <input type="number" name="capital" step="0.01" class="db-input premium-input" value="@project.Capital" required />
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Statü *</label>
+                    <select name="status" class="db-input premium-input">
+                        <option value="Planlandı" selected="@(project.Status == "Planlandı")">Planlandı</option>
+                        <option value="Devam Ediyor" selected="@(project.Status == "Devam Ediyor")">Devam Ediyor</option>
+                        <option value="Tamamlandı" selected="@(project.Status == "Tamamlandı")">Tamamlandı</option>
+                    </select>
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Proje Açıklaması</label>
+                    <textarea name="description" class="db-input premium-input db-input-textarea">@project.Description</textarea>
+                </div>
+            </div>
+            <div class="db-modal-footer">
+                <button type="button" class="btn-db btn-db-ghost" onclick="closeModal('modal-project-meta')">İptal</button>
+                <button type="submit" class="btn-db btn-db-emerald">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. ADD TASK MODAL -->
+<div class="pm-modal" id="modal-add-task">
+    <div class="pm-modal-content">
+        <div class="db-modal-header">
+            <span>➕ Yeni Görev Ekle</span>
+            <button onclick="closeModal('modal-add-task')" style="background:transparent; border:none; color:var(--db-text-muted); cursor:pointer; font-size:1.2rem;">✕</button>
+        </div>
+        <form asp-action="AddTask" method="post">
+            <div class="db-modal-body">
+                <div class="db-input-group">
+                    <label class="premium-form-label">Görev Adı *</label>
+                    <input type="text" name="taskName" class="db-input premium-input" placeholder="Örn: Altyapı kablolama montajı" required />
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Sorumlu Ekip Üyesi</label>
+                    <select name="assigneeId" class="db-input premium-input">
+                        <option value="">Atanmadı</option>
+                        @foreach (var m in Model.Team)
+                        {
+                            <option value="@m.Id">@m.Name (@m.Role)</option>
+                        }
+                    </select>
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Süre (Gün) *</label>
+                    <input type="number" name="durationDays" min="1" class="db-input premium-input" placeholder="Örn: 7" required />
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">İlerleme Oranı (%) *</label>
+                    <input type="number" name="progressPercent" min="0" max="100" class="db-input premium-input" value="0" required />
+                </div>
+                <div class="db-input-group">
+                    <label class="premium-form-label">Öncül Görevler (Virgülle ayırarak ID'leri girin)</label>
+                    <input type="text" name="predecessors" class="db-input premium-input" placeholder="Örn: 1, 2" />
+                    <span style="font-size:0.7rem; color:var(--text-secondary);">Mevcut görevlerin IDsini girmek, aralarında bağımlılık oluşturur (örn: Görev 5 başlamak için Görev 3 ve 4'e bağımlı ise: 3,4 girin).</span>
+                </div>
+            </div>
+            <div class="db-modal-footer">
+                <button type="button" class="btn-db btn-db-ghost" onclick="closeModal('modal-add-task')">İptal</button>
+                <button type="submit" class="btn-db btn-db-emerald">Ekle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.pm-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.pm-tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        const targetSec = document.getElementById('sec-' + tabId);
+        if (targetSec) targetSec.classList.add('active');
+        
+        const activeBtn = document.getElementById('tab-btn-' + tabId);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function toggleGanttView(viewMode) {
+        const btnTask = document.querySelector('[onclick="toggleGanttView(\'task\')"]');
+        const btnTeam = document.querySelector('[onclick="toggleGanttView(\'team\')"]');
+        const taskView = document.getElementById('gantt-task-view');
+        const teamView = document.getElementById('gantt-team-view');
+
+        if (viewMode === 'task') {
+            taskView.style.display = 'block';
+            teamView.style.display = 'none';
+            btnTask.className = 'btn-db btn-db-sm btn-db-emerald';
+            btnTeam.className = 'btn-db btn-db-sm btn-db-ghost';
+        } else {
+            taskView.style.display = 'none';
+            teamView.style.display = 'block';
+            btnTask.className = 'btn-db btn-db-sm btn-db-ghost';
+            btnTeam.className = 'btn-db btn-db-sm btn-db-emerald';
+        }
+    }
+
+    function openModal(id) {
+        document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+</script>

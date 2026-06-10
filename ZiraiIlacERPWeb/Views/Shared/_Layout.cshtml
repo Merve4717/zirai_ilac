@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -61,6 +62,16 @@
                         <span>Veritabanı Yöneticisi</span>
                     </a>
                 </li>
+                @if (Configuration.GetValue<bool>("Features:EnableProjectManagement", true))
+                {
+                    <li>
+                        <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "ProjectManagement" ? "active" : "")" 
+                           asp-controller="ProjectManagement" asp-action="Index">
+                            <span class="icon">📊</span>
+                            <span>Proje Yönetimi</span>
+                        </a>
+                    </li>
+                }
             </ul>
             
             <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 0.72rem; color: var(--text-secondary); text-align: center;">
