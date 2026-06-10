@@ -1,0 +1,266 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\views\\product\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\views\\product\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\views\\component.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\data\\erpdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\ziraiilacerpweb.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}|..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpweb\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpapi\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|solutionrelative:models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpapi\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|solutionrelative:controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpapi\\data\\erpdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|solutionrelative:data\\erpdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpapi\\ziraiilacerpapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|solutionrelative:ziraiilacerpapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|c:\\users\\merve r\u00FCzgar\\source\\repos\\ziraiilacerpapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3156DF72-0CC5-4E33-A64C-05E143786955}|ZiraiIlacERPAPI.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Component.razor",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Component.razor",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Views\\Component.razor",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Component.razor",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Views\\Component.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T16:01:14.902Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ZiraiIlacERPWeb.csproj",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\ZiraiIlacERPWeb.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-09T10:44:03.403Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Program.cs",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Program.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Program.cs",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Program.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAD4vx8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-09T10:54:38.663Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Product\\Index.cshtml",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Views\\Product\\Index.cshtml",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Product\\Index.cshtml",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Views\\Product\\Index.cshtml",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAIwFgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T10:50:36.318Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ERPDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Data\\ERPDbContext.cs",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Data\\ERPDbContext.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Data\\ERPDbContext.cs",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Data\\ERPDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-08T00:05:32.439Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Models\\Product.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Models\\Product.cs",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Models\\Product.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-08T00:03:09.924Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAArwB4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-06T19:20:39.111Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAkwGEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T19:40:50.626Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Product\\Create.cshtml",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Views\\Product\\Create.cshtml",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Views\\Product\\Create.cshtml",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Views\\Product\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-09T16:12:57.294Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Controllers\\ProductController.cs",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\Controllers\\ProductController.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\Controllers\\ProductController.cs",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\Controllers\\ProductController.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAqwDcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-08T00:11:30.086Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\appsettings.json",
+              "RelativeDocumentMoniker": "..\\ZiraiIlacERPWeb\\appsettings.json",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPWeb\\appsettings.json",
+              "RelativeToolTip": "..\\ZiraiIlacERPWeb\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-07T19:21:34.244Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Controllers\\ProductsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ProductsController.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Controllers\\ProductsController.cs",
+              "RelativeToolTip": "Controllers\\ProductsController.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAowDsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-07T10:48:52.816Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Models\\Product.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Models\\Product.cs",
+              "RelativeToolTip": "Models\\Product.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-06T19:16:27.857Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-06T19:05:11.693Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ERPDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Data\\ERPDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\ERPDbContext.cs",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\Data\\ERPDbContext.cs",
+              "RelativeToolTip": "Data\\ERPDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-06T19:19:39.767Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ZiraiIlacERPAPI",
+              "DocumentMoniker": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\ZiraiIlacERPAPI.csproj",
+              "RelativeDocumentMoniker": "ZiraiIlacERPAPI.csproj",
+              "ToolTip": "C:\\Users\\MERVE R\u00DCZGAR\\source\\repos\\ZiraiIlacERPAPI\\ZiraiIlacERPAPI.csproj",
+              "RelativeToolTip": "ZiraiIlacERPAPI.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-06T18:37:17.625Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

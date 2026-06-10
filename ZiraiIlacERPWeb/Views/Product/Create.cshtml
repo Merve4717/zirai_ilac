@@ -1,0 +1,41 @@
+﻿@model ZiraiIlacERPWeb.Models.Product
+
+<div class="container mt-4">
+
+    <h2>Yeni Ürün Ekle</h2>
+
+    <form asp-action="Create" method="post">
+
+        <div class="mb-3">
+            <label>Ürün Adı</label>
+            <input asp-for="ProductName" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Barkod</label>
+            <input asp-for="Barcode" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Fiyat</label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Stok Miktarı</label>
+            <input asp-for="StockQuantity" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Kaydet
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Geri Dön
+        </a>
+
+    </form>
+
+</div>
+
+

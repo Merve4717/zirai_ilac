@@ -1,0 +1,6 @@
+@ZiraiIlacERPAPI_HostAddress = http://localhost:5191
+
+GET {{ZiraiIlacERPAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

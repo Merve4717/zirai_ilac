@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zirai İlaç ERP Sistemi</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <div class="d-flex">
+
+        <!-- SOL MENÜ -->
+
+        <div class="bg-dark text-white p-3"
+             style="width:250px; min-height:100vh;">
+
+            <h3 class="text-center mb-4">
+                🌱 Zirai ERP
+            </h3>
+
+            <hr />
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Product"
+                       asp-action="Index">
+                        🏠 Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white"
+                       asp-controller="Product"
+                       asp-action="Index">
+                        📦 Ürünler
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white">
+                        📂 Kategoriler
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white">
+                        👥 Müşteriler
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white">
+                        📊 Raporlar
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <!-- İÇERİK -->
+
+        <div class="flex-grow-1">
+
+            <nav class="navbar navbar-dark bg-success">
+                <div class="container-fluid">
+
+                    <span class="navbar-brand mb-0 h1">
+                        Zirai İlaç ERP Yönetim Paneli
+                    </span>
+
+                </div>
+            </nav>
+
+            <div class="container mt-4">
+
+                @RenderBody()
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
+

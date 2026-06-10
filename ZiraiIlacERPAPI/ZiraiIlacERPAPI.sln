@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36401.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZiraiIlacERPAPI", "ZiraiIlacERPAPI.csproj", "{3156DF72-0CC5-4E33-A64C-05E143786955}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZiraiIlacERPWeb", "..\ZiraiIlacERPWeb\ZiraiIlacERPWeb.csproj", "{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3156DF72-0CC5-4E33-A64C-05E143786955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3156DF72-0CC5-4E33-A64C-05E143786955}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3156DF72-0CC5-4E33-A64C-05E143786955}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3156DF72-0CC5-4E33-A64C-05E143786955}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8A50CFC-29C6-7319-D5FC-41E9A5CB58F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {128FDC90-B38A-4CDC-95C0-A15BAFD296EE}
+	EndGlobalSection
+EndGlobal
