@@ -1,0 +1,104 @@
+@model ZiraiIlacERPWeb.Models.Order
+
+@{
+    ViewData["Title"] = "Sipariş Detayı";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 style="font-weight: 700; color: var(--text-primary); margin: 0;">📋 Sipariş Detayı #@Model.Id</h2>
+    <a asp-action="Index" class="btn-premium btn-premium-secondary btn-premium-sm">Siparişlere Dön</a>
+</div>
+
+<div class="row g-4">
+    <!-- Müşteri ve Sipariş Bilgileri Kartı -->
+    <div class="col-md-4">
+        <div class="premium-card">
+            <div class="premium-card-title" style="border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:15px;">
+                👥 Müşteri Bilgileri
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:12px; font-size:0.9rem;">
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">Müşteri Adı</span>
+                    <strong style="color:var(--text-primary);">@(Model.Customer?.FullName ?? "Belirtilmemiş")</strong>
+                </div>
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">Telefon</span>
+                    <span style="color:var(--text-primary);">@(Model.Customer?.PhoneNumber ?? "—")</span>
+                </div>
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">E-posta</span>
+                    <code style="color:var(--accent-emerald);">@(Model.Customer?.Email ?? "—")</code>
+                </div>
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">Fatura Adresi</span>
+                    <span style="color:var(--text-primary);">@(Model.Customer?.Address ?? "—")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-card mt-4">
+            <div class="premium-card-title" style="border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:15px;">
+                ⚙️ Sipariş Bilgileri
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:12px; font-size:0.9rem;">
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">Sipariş Tarihi</span>
+                    <span style="color:var(--text-primary);">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+                </div>
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">Sipariş Durumu</span>
+                    <span class="zirai-badge zirai-badge-emerald">Aktif / Tamamlandı</span>
+                </div>
+                <div>
+                    <span style="color:var(--text-secondary); display:block; font-size:0.75rem; text-transform:uppercase;">Toplam Tutar</span>
+                    <strong style="color:var(--accent-gold); font-size:1.4rem;">
+                        @(Model.TotalAmount?.ToString("C2", new System.Globalization.CultureInfo("tr-TR")) ?? "0.00 ₺")
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sipariş Kalemleri Tablosu -->
+    <div class="col-md-8">
+        <div class="premium-card p-0" style="overflow:hidden;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+                <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin: 0;">📦 Sipariş Kalemleri</h4>
+            </div>
+
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Adı</th>
+                            <th style="text-align:right;">Birim Fiyat</th>
+                            <th style="text-align:right;">Miktar</th>
+                            <th style="text-align:right;">Toplam Tutar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.OrderDetails != null)
+                        {
+                            foreach (var detail in Model.OrderDetails)
+                            {
+                                <tr>
+                                    <td>
+                                        <div style="font-weight:600; color:var(--text-primary);">@detail.Product?.ProductName</div>
+                                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">Barkod: @detail.Product?.Barcode</div>
+                                    </td>
+                                    <td style="text-align:right;">@detail.UnitPrice.ToString("C2", new System.Globalization.CultureInfo("tr-TR"))</td>
+                                    <td style="text-align:right; font-weight:700; color:var(--text-primary);">@detail.Quantity Adet</td>
+                                    <td style="text-align:right; font-weight:700; color:var(--accent-emerald);">
+                                        @((detail.Quantity * detail.UnitPrice).ToString("C2", new System.Globalization.CultureInfo("tr-TR")))
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

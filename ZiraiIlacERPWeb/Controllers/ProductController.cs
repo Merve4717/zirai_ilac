@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZiraiIlacERPWeb.Data;
 using ZiraiIlacERPWeb.Models;
@@ -16,13 +16,16 @@ namespace ZiraiIlacERPWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var products = await _context.Products.ToListAsync();
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .ToListAsync();
 
             return View(products);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Categories = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(await _context.Categories.ToListAsync(), "Id", "CategoryName");
             return View();
         }
 
@@ -36,7 +39,7 @@ namespace ZiraiIlacERPWeb.Controllers
 
                 return RedirectToAction("Index");
             }
-
+            ViewBag.Categories = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(await _context.Categories.ToListAsync(), "Id", "CategoryName", product.CategoryId);
             return View(product);
         }
         [HttpPost]

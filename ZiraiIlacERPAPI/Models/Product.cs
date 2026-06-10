@@ -1,4 +1,4 @@
-﻿namespace ZiraiIlacERPAPI.Models
+namespace ZiraiIlacERPAPI.Models
 {
     public class Product
     {
@@ -15,5 +15,8 @@
         public DateTime? ExpirationDate { get; set; }
 
         public int? CategoryId { get; set; }
+
+        // Navigation property
+        public Category? Category { get; set; }
     }
 }

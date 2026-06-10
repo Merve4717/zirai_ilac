@@ -1,0 +1,1191 @@
+@{
+    ViewData["Title"] = "Veritabanı Yöneticisi";
+}
+
+<style>
+    /* PAGE CUSTOM STYLES (Zümrüt Yeşili & Altın Sarısı Glassmorphism) */
+    :root {
+        --db-bg: #07110c;
+        --db-panel: rgba(12, 30, 20, 0.75);
+        --db-card: rgba(20, 48, 32, 0.5);
+        --db-card-hover: rgba(30, 70, 48, 0.65);
+        --db-border: rgba(35, 90, 60, 0.4);
+        --db-border-active: rgba(16, 185, 129, 0.6);
+        --db-emerald: #10b981;
+        --db-emerald-hover: #34d399;
+        --db-gold: #f59e0b;
+        --db-gold-hover: #fbbf24;
+        --db-text: #e6edf3;
+        --db-text-muted: #8b949e;
+        --db-text-darker: #484f58;
+        --db-input-bg: #030805;
+        --db-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .db-manager-container {
+        color: var(--db-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: radial-gradient(circle at top right, #0e2a1b, var(--db-bg));
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid var(--db-border);
+        box-shadow: var(--db-shadow);
+        min-height: 80vh;
+        margin-bottom: 40px;
+    }
+
+    .db-glass-panel {
+        background: var(--db-panel);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--db-border);
+        border-radius: 12px;
+        box-shadow: var(--db-shadow);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .db-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--db-border);
+    }
+
+    .db-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--db-emerald), var(--db-gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* TABS */
+    .db-tabs {
+        display: flex;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid var(--db-border);
+    }
+
+    .db-tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--db-text-muted);
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .db-tab-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--db-text);
+    }
+
+    .db-tab-btn.active {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--db-emerald);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* LAYOUT SIDES */
+    .db-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .db-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .db-sidebar-section {
+        background: rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--db-border);
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .db-sidebar-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--db-gold);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .db-table-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .db-table-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.82rem;
+        color: var(--db-text-muted);
+        transition: all 0.15s ease;
+    }
+
+    .db-table-item:hover {
+        background: var(--db-card);
+        color: var(--db-text);
+    }
+
+    .db-table-item.active {
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--db-emerald);
+        font-weight: 600;
+    }
+
+    .db-table-count {
+        font-size: 0.7rem;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 6px;
+        border-radius: 10px;
+        color: var(--db-text-muted);
+    }
+
+    /* SQL EDITOR */
+    .sql-editor-container {
+        display: flex;
+        flex-direction: column;
+        height: 300px;
+        border: 1px solid var(--db-border);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+    .sql-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.25);
+        border-bottom: 1px solid var(--db-border);
+    }
+
+    .sql-editor-body {
+        display: flex;
+        flex: 1;
+        position: relative;
+    }
+
+    .line-numbers {
+        width: 40px;
+        background: rgba(0, 0, 0, 0.4);
+        border-right: 1px solid var(--db-border);
+        padding: 12px 6px;
+        text-align: right;
+        color: var(--db-text-darker);
+        font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        user-select: none;
+        white-space: pre;
+    }
+
+    .sql-textarea {
+        flex: 1;
+        background: var(--db-input-bg);
+        color: #10b981;
+        border: none;
+        outline: none;
+        padding: 12px;
+        font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        resize: none;
+        tab-size: 4;
+    }
+
+    /* RESULT AREA */
+    .result-container {
+        border: 1px solid var(--db-border);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        min-height: 250px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(0, 0, 0, 0.25);
+        border-bottom: 1px solid var(--db-border);
+    }
+
+    .result-table-wrapper {
+        flex: 1;
+        overflow: auto;
+        max-height: 400px;
+    }
+
+    .db-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+        text-align: left;
+    }
+
+    .db-table th {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 10px 14px;
+        color: var(--db-gold);
+        font-weight: 700;
+        border-bottom: 2px solid var(--db-border);
+        white-space: nowrap;
+    }
+
+    .db-table td {
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--db-border);
+        color: var(--db-text-muted);
+        white-space: nowrap;
+    }
+
+    .db-table tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--db-text);
+    }
+
+    .null-cell {
+        color: var(--db-text-darker);
+        font-style: italic;
+    }
+
+    /* BUTTONS */
+    .btn-db {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        font-family: inherit;
+    }
+
+    .btn-db-emerald {
+        background: var(--db-emerald);
+        color: #fff;
+    }
+
+    .btn-db-emerald:hover {
+        background: var(--db-emerald-hover);
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-db-gold {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--db-gold);
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-db-gold:hover {
+        background: rgba(245, 158, 11, 0.3);
+        color: var(--db-gold-hover);
+    }
+
+    .btn-db-ghost {
+        background: transparent;
+        color: var(--db-text-muted);
+        border-color: var(--db-border);
+    }
+
+    .btn-db-ghost:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--db-text);
+        border-color: var(--db-text-muted);
+    }
+
+    .btn-db-red {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-db-red:hover {
+        background: rgba(239, 68, 68, 0.3);
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-db-sm {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* SCHEMA VIEW */
+    .schema-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .schema-card {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--db-border);
+        border-radius: 12px;
+        box-shadow: var(--db-shadow);
+        transition: all 0.2s ease;
+        overflow: hidden;
+    }
+
+    .schema-card:hover {
+        border-color: var(--db-border-active);
+        transform: translateY(-2px);
+    }
+
+    .schema-card-header {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--db-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 700;
+        color: var(--db-gold);
+    }
+
+    .schema-cols-list {
+        padding: 8px 0;
+    }
+
+    .schema-col-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 16px;
+        font-size: 0.78rem;
+    }
+
+    .schema-col-item:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-pk {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--db-gold);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 4px;
+        padding: 1px 4px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        margin-right: 4px;
+    }
+
+    .badge-fk {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 4px;
+        padding: 1px 4px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        margin-right: 4px;
+    }
+
+    /* SAVED QUERIES GRID */
+    .saved-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .saved-card {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--db-border);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .saved-card:hover {
+        border-color: var(--db-emerald);
+    }
+
+    .saved-card-header {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--db-border);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .saved-card-body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .saved-card-desc {
+        font-size: 0.78rem;
+        color: var(--db-text-muted);
+        min-height: 32px;
+    }
+
+    .saved-card-sql {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.75rem;
+        color: var(--db-emerald);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .saved-card-footer {
+        padding: 12px 16px;
+        border-top: 1px solid var(--db-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* DIALOG MODALS */
+    .db-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .db-modal.open {
+        display: flex;
+    }
+
+    .db-modal-content {
+        background: #0b1a13;
+        border: 1px solid var(--db-border);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: var(--db-shadow);
+        overflow: hidden;
+    }
+
+    .db-modal-header {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--db-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+    }
+
+    .db-modal-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .db-modal-footer {
+        padding: 12px 20px;
+        border-top: 1px solid var(--db-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        background: rgba(0, 0, 0, 0.15);
+    }
+
+    .db-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .db-input-group label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--db-gold);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .db-input {
+        background: var(--db-input-bg);
+        border: 1px solid var(--db-border);
+        border-radius: 6px;
+        padding: 8px 12px;
+        color: var(--db-text);
+        font-size: 0.85rem;
+        outline: none;
+    }
+
+    .db-input:focus {
+        border-color: var(--db-emerald);
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .db-input-textarea {
+        resize: vertical;
+        min-height: 80px;
+        font-family: monospace;
+    }
+
+    /* TOAST NOTIFICATIONS */
+    #db-toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .db-toast {
+        background: rgba(12, 30, 20, 0.9);
+        border: 1px solid var(--db-border);
+        box-shadow: var(--db-shadow);
+        color: var(--db-text);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .db-toast-ok { border-left: 4px solid var(--db-emerald); }
+    .db-toast-err { border-left: 4px solid #ef4444; }
+    .db-toast-info { border-left: 4px solid var(--db-gold); }
+
+    @@keyframes slideIn {
+        from { transform: translateX(120%); }
+        to { transform: translateX(0); }
+    }
+</style>
+
+<div class="db-manager-container">
+    <div class="db-header">
+        <h2 class="db-title">🗄️ Zirai ERP — Veritabanı Yöneticisi</h2>
+        <div>
+            <span id="db-status-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--db-emerald); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; font-weight: 700;">
+                🟢 SQL Server — Bağlı
+            </span>
+        </div>
+    </div>
+
+    <div class="db-tabs">
+        <button class="db-tab-btn active" onclick="switchSection('editor')">⌨️ SQL Editörü</button>
+        <button class="db-tab-btn" onclick="switchSection('schema')">🏗️ Şema Görünümü</button>
+        <button class="db-tab-btn" onclick="switchSection('saved')">💾 Kayıtlı Sorgular</button>
+    </div>
+
+    <!-- 1. SQL EDITOR SECTION -->
+    <div id="sec-editor" class="db-section-content">
+        <div class="db-layout">
+            <!-- Sidebar -->
+            <div class="db-sidebar">
+                <div class="db-sidebar-section">
+                    <div class="db-sidebar-title">Tablolar <button class="btn-db btn-db-sm btn-db-ghost" onclick="loadSchema()" style="padding: 2px 6px;">🔄</button></div>
+                    <div id="sidebar-tables-list" class="db-table-list">
+                        <!-- Loaded dynamically -->
+                        <span style="font-size: 0.75rem; color: var(--db-text-darker);">Yükleniyor...</span>
+                    </div>
+                </div>
+
+                <div class="db-sidebar-section">
+                    <div class="db-sidebar-title">Hızlı Şablonlar</div>
+                    <div class="db-table-list" id="sidebar-snippets-list">
+                        <!-- Populated below -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workspace -->
+            <div>
+                <div class="sql-editor-container">
+                    <div class="sql-toolbar">
+                        <button class="btn-db btn-db-emerald" onclick="runCustomQuery()">▶ Çalıştır (F5)</button>
+                        <button class="btn-db btn-db-ghost btn-db-sm" onclick="clearSqlEditor()">🗑️ Temizle</button>
+                        <button class="btn-db btn-db-gold btn-db-sm" onclick="openSaveModal()">💾 Kaydet</button>
+                        <button class="btn-db btn-db-ghost btn-db-sm" onclick="formatSqlText()">✨ Formatla</button>
+                        <span id="exec-time" style="margin-left: auto; font-size: 0.72rem; color: var(--db-text-muted);"></span>
+                    </div>
+                    <div class="sql-editor-body">
+                        <div class="line-numbers" id="line-numbers-pre">1</div>
+                        <textarea id="sql-editor-area" class="sql-textarea" spellcheck="false" 
+                            placeholder="-- SQL sorgunuzu buraya yazın&#10;-- Örnek:&#10;SELECT * FROM Products WHERE StockQuantity < 50;&#10;-- (F5 tuşu ile de çalıştırabilirsiniz)"
+                            oninput="syncLineNumbers()" onkeydown="handleEditorKeys(event)"></textarea>
+                    </div>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-header">
+                        <span style="font-weight: 700; font-size: 0.82rem; color: var(--db-gold);">📋 Sorgu Sonuçları</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-db btn-db-ghost btn-db-sm" id="btn-export-csv" onclick="exportData('csv')" style="display: none;">⬇️ CSV</button>
+                            <button class="btn-db btn-db-ghost btn-db-sm" id="btn-export-json" onclick="exportData('json')" style="display: none;">⬇️ JSON</button>
+                        </div>
+                    </div>
+                    <div class="result-table-wrapper" id="result-table-area">
+                        <div style="padding: 40px; text-align: center; color: var(--db-text-darker); font-size: 0.85rem;">
+                            Sorgu çalıştırmak için metin yazıp ▶ Çalıştır butonuna basın.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SCHEMA VIEW SECTION -->
+    <div id="sec-schema" class="db-section-content" style="display: none;">
+        <div class="schema-grid" id="schema-cards-grid">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+
+    <!-- 3. SAVED QUERIES SECTION -->
+    <div id="sec-saved" class="db-section-content" style="display: none;">
+        <div style="display: flex; justify-content: flex-end; padding: 10px 20px 0;">
+            <button class="btn-db btn-db-emerald" onclick="openSaveModal(true)">➕ Yeni Sorgu Ekle</button>
+        </div>
+        <div class="saved-grid" id="saved-queries-grid">
+            <!-- Loaded from localStorage -->
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: SAVE QUERY -->
+<div class="db-modal" id="modal-save-query">
+    <div class="db-modal-content">
+        <div class="db-modal-header">
+            <span>💾 Sorguyu Kaydet</span>
+            <button onclick="closeSaveModal()" style="background:transparent; border:none; color:var(--db-text-muted); cursor:pointer; font-size:1.2rem;">✕</button>
+        </div>
+        <div class="db-modal-body">
+            <input type="hidden" id="edit-query-id">
+            <div class="db-input-group">
+                <label>Sorgu Adı *</label>
+                <input type="text" id="input-query-name" class="db-input" placeholder="Örn: Kritik Stok Raporu">
+            </div>
+            <div class="db-input-group">
+                <label>Açıklama</label>
+                <input type="text" id="input-query-desc" class="db-input" placeholder="Örn: Stok miktarı 50'nin altına düşen ürünleri getirir">
+            </div>
+            <div class="db-input-group">
+                <label>SQL Sorgusu *</label>
+                <textarea id="input-query-sql" class="db-input db-input-textarea" placeholder="SELECT ..."></textarea>
+            </div>
+        </div>
+        <div class="db-modal-footer">
+            <button class="btn-db btn-db-ghost" onclick="closeSaveModal()">İptal</button>
+            <button class="btn-db btn-db-emerald" onclick="saveQueryToLocalStorage()">Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOASTS -->
+<div id="db-toast-container"></div>
+
+<script>
+    // SNIPPETS
+    const SNIPPETS = [
+        { label: 'Tüm Ürünler', sql: 'SELECT * FROM Products;' },
+        { label: 'Ürün Kategori Birleşimi', sql: 'SELECT p.Id, p.ProductName, c.CategoryName, p.Price, p.StockQuantity\nFROM Products p\nLEFT JOIN Categories c ON p.CategoryId = c.Id;' },
+        { label: 'Sipariş Detayları Raporu', sql: 'SELECT o.Id AS SiparisId, o.OrderDate, c.FirstName + \' \' + c.LastName AS Musteri,\n       p.ProductName, od.Quantity, od.UnitPrice, od.Quantity * od.UnitPrice AS ToplamTutar\nFROM Orders o\nJOIN Customers c ON o.CustomerId = c.Id\nJOIN OrderDetails od ON o.Id = od.OrderId\nJOIN Products p ON od.ProductId = p.Id;' },
+        { label: 'Kategoriye Göre Ürün Sayısı', sql: 'SELECT c.CategoryName, COUNT(p.Id) AS UrunSayisi, SUM(p.StockQuantity) AS ToplamStok\nFROM Categories c\nLEFT JOIN Products p ON c.Id = p.CategoryId\nGROUP BY c.CategoryName;' },
+        { label: 'Kritik Stok Uyarısı', sql: 'SELECT * FROM Products WHERE StockQuantity < 50 ORDER BY StockQuantity ASC;' },
+        { label: 'Müşteri Sipariş İstatistikleri', sql: 'SELECT c.Id, c.FirstName + \' \' + c.LastName AS Musteri,\n       COUNT(o.Id) AS SiparisSayisi, SUM(o.TotalAmount) AS ToplamHarcama\nFROM Customers c\nLEFT JOIN Orders o ON c.Id = o.CustomerId\nGROUP BY c.Id, c.FirstName, c.LastName\nORDER BY ToplamHarcama DESC;' }
+    ];
+
+    let liveSchema = null;
+    let lastActiveResult = null;
+
+    // LOCAL STORAGE BACKED SAVED QUERIES
+    const defaultSavedQueries = [
+        { id: 1, name: 'Kritik Stoktaki Ürünler', desc: 'Stok adedi 50 ve altında olan zirai ilaçları ve gübreleri getirir.', sql: 'SELECT * FROM Products WHERE StockQuantity <= 50 ORDER BY StockQuantity;' },
+        { id: 2, name: 'Müşteri Bazlı Ciro Analizi', desc: 'Müşterilerin sipariş adetlerini ve harcadıkları toplam tutarları büyükten küçüğe sıralar.', sql: 'SELECT c.FirstName + \' \' + c.LastName AS Musteri, COUNT(o.Id) AS SiparisAdedi, SUM(o.TotalAmount) AS ToplamCiro\nFROM Customers c\nLEFT JOIN Orders o ON c.Id = o.CustomerId\nGROUP BY c.FirstName, c.LastName\nORDER BY ToplamCiro DESC;' }
+    ];
+
+    document.addEventListener("DOMContentLoaded", function () {
+        loadSchema();
+        syncLineNumbers();
+        populateSnippets();
+        initSavedQueries();
+    });
+
+    // 1. SECTION SWITCHER
+    function switchSection(secId) {
+        document.querySelectorAll('.db-section-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.db-tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById('sec-' + secId).style.display = 'block';
+        event.currentTarget.classList.add('active');
+
+        if (secId === 'schema') {
+            renderSchemaGrid();
+        } else if (secId === 'saved') {
+            renderSavedQueries();
+        }
+    }
+
+    // 2. FETCH DATABASE SCHEMA
+    async function loadSchema() {
+        try {
+            const res = await fetch('@Url.Action("GetSchema", "DatabaseManager")');
+            if (!res.ok) throw new Error("Şema yüklenirken hata oluştu.");
+            liveSchema = await res.json();
+            renderSidebarTables();
+            if (document.getElementById('sec-schema').style.display !== 'none') {
+                renderSchemaGrid();
+            }
+        } catch (err) {
+            showToast("❌ Şema yüklenemedi: " + err.message, "err");
+        }
+    }
+
+    // RENDER SIDEBAR TABLES
+    function renderSidebarTables() {
+        const list = document.getElementById('sidebar-tables-list');
+        if (!liveSchema) return;
+        
+        let html = '';
+        for (const [tbl, meta] of Object.entries(liveSchema)) {
+            html += `
+                <div class="db-table-item" onclick="insertTableSelect('${tbl}')">
+                    <span>${meta.icon} ${meta.label}</span>
+                    <span class="db-table-count">${meta.rows}</span>
+                </div>
+            `;
+        }
+        list.innerHTML = html;
+    }
+
+    // INSERT SELECT SNIPPET ON TABLE CLICK
+    function insertTableSelect(tblName) {
+        const sql = `SELECT * FROM ${tblName};`;
+        document.getElementById('sql-editor-area').value = sql;
+        syncLineNumbers();
+        showToast("⌨️ Sorgu editöre yüklendi", "info");
+    }
+
+    // POPULATE SNIPPETS LIST
+    function populateSnippets() {
+        const list = document.getElementById('sidebar-snippets-list');
+        list.innerHTML = SNIPPETS.map(s => `
+            <div class="db-table-item" onclick="insertSnippet('${s.label}')">
+                <span>⚡ ${s.label}</span>
+            </div>
+        `).join('');
+    }
+
+    function insertSnippet(label) {
+        const found = SNIPPETS.find(s => s.label === label);
+        if (found) {
+            document.getElementById('sql-editor-area').value = found.sql;
+            syncLineNumbers();
+            showToast("⌨️ Şablon yüklendi", "info");
+        }
+    }
+
+    // 3. SQL EDITOR LINES AND KEYS
+    function syncLineNumbers() {
+        const area = document.getElementById('sql-editor-area');
+        const lines = area.value.split('\n').length;
+        document.getElementById('line-numbers-pre').textContent = Array.from({length: lines}, (_, i) => i + 1).join('\n');
+    }
+
+    function handleEditorKeys(e) {
+        const area = e.currentTarget;
+        if (e.key === 'F5') {
+            e.preventDefault();
+            runCustomQuery();
+        } else if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = area.selectionStart;
+            area.value = area.value.substring(0, start) + "\t" + area.value.substring(area.selectionEnd);
+            area.selectionStart = area.selectionEnd = start + 1;
+        }
+        setTimeout(syncLineNumbers, 10);
+    }
+
+    function clearSqlEditor() {
+        document.getElementById('sql-editor-area').value = '';
+        syncLineNumbers();
+        showToast("🧹 Editör temizlendi", "info");
+    }
+
+    function formatSqlText() {
+        const area = document.getElementById('sql-editor-area');
+        let sql = area.value;
+        const keywords = ['SELECT', 'FROM', 'WHERE', 'JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'INNER JOIN', 'ON', 'GROUP BY', 'ORDER BY', 'HAVING', 'LIMIT', 'OFFSET', 'INSERT INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE FROM'];
+        keywords.forEach(kw => {
+            sql = sql.replace(new RegExp('\\b' + kw + '\\b', 'gi'), '\n' + kw + ' ');
+        });
+        sql = sql.replace(/,\s*/g, ',\n    ').replace(/^\n/, '').replace(/\n+/g, '\n');
+        area.value = sql.trim();
+        syncLineNumbers();
+        showToast("✨ Sorgu düzenlendi", "info");
+    }
+
+    // 4. RUN CUSTOM SQL QUERY
+    async function runCustomQuery(directSql = null) {
+        const sql = directSql || document.getElementById('sql-editor-area').value.trim();
+        if (!sql) {
+            showToast("⚠️ Çalıştırmak için bir sorgu yazın", "info");
+            return;
+        }
+
+        const resultArea = document.getElementById('result-table-area');
+        resultArea.innerHTML = `<div style="padding:40px; text-align:center; color:var(--db-text-muted);"><span class="spinner-border spinner-border-sm text-success" role="status"></span> Sorgu çalıştırılıyor...</div>`;
+        document.getElementById('exec-time').textContent = 'Sorgulanıyor...';
+
+        try {
+            const res = await fetch('@Url.Action("ExecuteQuery", "DatabaseManager")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sql: sql })
+            });
+            if (!res.ok) throw new Error("Ağ/Sunucu hatası oluştu.");
+            const data = await res.json();
+
+            document.getElementById('exec-time').textContent = `⏱ ${data.elapsedMs}ms`;
+
+            if (!data.success) {
+                resultArea.innerHTML = `<div style="padding:16px; margin: 16px; border-left:4px solid #ef4444; background:rgba(239, 68, 68, 0.08); color:#ef4444; font-family:monospace; font-size:0.85rem;">❌ Hata:<br>${data.message}</div>`;
+                showToast("❌ Sorgu hatası!", "err");
+                hideExportButtons();
+                lastActiveResult = null;
+                return;
+            }
+
+            if (data.isSelect) {
+                lastActiveResult = data;
+                renderResultTable(data.columns, data.values);
+                showExportButtons();
+                showToast(`✅ Başarılı: ${data.values.length} satır getirildi`, "ok");
+            } else {
+                resultArea.innerHTML = `<div style="padding:24px; text-align:center; color:var(--db-emerald); font-weight:600; font-size:0.9rem;">✅ Sorgu başarıyla çalıştırıldı. Etkilenen satır sayısı: ${data.rowsAffected}</div>`;
+                showToast("✅ Sorgu çalıştırıldı", "ok");
+                hideExportButtons();
+                lastActiveResult = null;
+            }
+            loadSchema(); // Reload counts since data might have changed
+        } catch (err) {
+            resultArea.innerHTML = `<div style="padding:16px; color:#ef4444; font-family:monospace; font-size:0.85rem;">❌ Hata:<br>${err.message}</div>`;
+            document.getElementById('exec-time').textContent = 'Hata';
+            showToast("❌ İstek gönderilemedi!", "err");
+            hideExportButtons();
+            lastActiveResult = null;
+        }
+    }
+
+    function renderResultTable(cols, vals) {
+        const container = document.getElementById('result-table-area');
+        if (vals.length === 0) {
+            container.innerHTML = `<div style="padding:40px; text-align:center; color:var(--db-text-muted);">Tablodan veri dönmedi.</div>`;
+            return;
+        }
+
+        let html = `<table class="db-table"><thead><tr>`;
+        cols.forEach(c => { html += `<th>${c}</th>`; });
+        html += `</tr></thead><tbody>`;
+
+        vals.forEach(row => {
+            html += `<tr>`;
+            row.forEach(v => {
+                if (v === null || v === undefined) {
+                    html += `<td><span class="null-cell">NULL</span></td>`;
+                } else if (typeof v === 'number') {
+                    html += `<td style="color:#60a5fa; font-weight:600;">${v}</td>`;
+                } else if (typeof v === 'string' && v.match(/^\d{4}-\d{2}-\d{2}/)) {
+                    html += `<td style="color:#d97706;">${v.substring(0, 10)}</td>`;
+                } else {
+                    html += `<td>${escapeHtml(v.toString())}</td>`;
+                }
+            });
+            html += `</tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function showExportButtons() {
+        document.getElementById('btn-export-csv').style.display = 'inline-flex';
+        document.getElementById('btn-export-json').style.display = 'inline-flex';
+    }
+
+    function hideExportButtons() {
+        document.getElementById('btn-export-csv').style.display = 'none';
+        document.getElementById('btn-export-json').style.display = 'none';
+    }
+
+    // 5. EXPORT ACTIONS
+    function exportData(format) {
+        if (!lastActiveResult) return;
+        const { columns, values } = lastActiveResult;
+
+        if (format === 'csv') {
+            const csvRows = [];
+            csvRows.push(columns.join(','));
+            values.forEach(row => {
+                const mappedRow = row.map(val => {
+                    if (val === null || val === undefined) return '';
+                    let strVal = val.toString();
+                    if (strVal.includes(',') || strVal.includes('"') || strVal.includes('\n')) {
+                        strVal = `"${strVal.replace(/"/g, '""')}"`;
+                    }
+                    return strVal;
+                });
+                csvRows.push(mappedRow.join(','));
+            });
+            downloadBlob(csvRows.join('\n'), 'sorgu_sonucu.csv', 'text/csv');
+        } else if (format === 'json') {
+            const formatted = values.map(row => {
+                let obj = {};
+                columns.forEach((col, idx) => {
+                    obj[col] = row[idx];
+                });
+                return obj;
+            });
+            downloadBlob(JSON.stringify(formatted, null, 2), 'sorgu_sonucu.json', 'application/json');
+        }
+        showToast(`📥 Veriler ${format.toUpperCase()} olarak indirildi`, "ok");
+    }
+
+    function downloadBlob(content, filename, contentType) {
+        const blob = new Blob([content], { type: contentType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // 6. RENDER SCHEMA GRID
+    function renderSchemaGrid() {
+        const grid = document.getElementById('schema-cards-grid');
+        if (!liveSchema) {
+            grid.innerHTML = `<div style="color:var(--db-text-muted);">Yükleniyor...</div>`;
+            return;
+        }
+
+        let html = '';
+        for (const [tbl, meta] of Object.entries(liveSchema)) {
+            html += `
+                <div class="schema-card">
+                    <div class="schema-card-header">
+                        <span>${meta.icon} ${meta.label} (${tbl})</span>
+                        <span style="font-size: 0.72rem; opacity: 0.8;">${meta.rows} satır</span>
+                    </div>
+                    <div class="schema-cols-list">
+            `;
+
+            meta.cols.forEach(c => {
+                let badge = '';
+                if (c.pk) badge += `<span class="badge-pk">PK</span>`;
+                if (c.fk) badge += `<span class="badge-fk" title="İlişki: ${c.fk}">FK</span>`;
+
+                html += `
+                    <div class="schema-col-item">
+                        <span>${badge}${c.n}</span>
+                        <span style="font-family: monospace; font-size: 0.72rem; color: var(--db-text-darker);">${c.t} ${c.nn ? 'NOT NULL' : ''}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        }
+        grid.innerHTML = html;
+    }
+
+    // 7. RENDER SAVED QUERIES FROM LOCALSTORAGE
+    function initSavedQueries() {
+        let saved = localStorage.getItem("zirai_erp_queries");
+        if (!saved) {
+            localStorage.setItem("zirai_erp_queries", JSON.stringify(defaultSavedQueries));
+        }
+    }
+
+    function getSavedQueries() {
+        let saved = localStorage.getItem("zirai_erp_queries");
+        return saved ? JSON.parse(saved) : [];
+    }
+
+    function renderSavedQueries() {
+        const grid = document.getElementById('saved-queries-grid');
+        const queries = getSavedQueries();
+
+        if (queries.length === 0) {
+            grid.innerHTML = `<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--db-text-muted);">Kayıtlı sorgu bulunmuyor.</div>`;
+            return;
+        }
+
+        let html = '';
+        queries.forEach(q => {
+            html += `
+                <div class="saved-card">
+                    <div class="saved-card-header">
+                        <span>${q.name}</span>
+                        <button class="btn-db btn-db-sm btn-db-red" onclick="deleteSavedQuery(${q.id})" style="padding: 2px 6px;">🗑️</button>
+                    </div>
+                    <div class="saved-card-body">
+                        <div class="saved-card-desc">${q.desc || 'Açıklama girilmedi.'}</div>
+                        <div class="saved-card-sql" title="${escapeHtml(q.sql)}">${escapeHtml(q.sql)}</div>
+                    </div>
+                    <div class="saved-card-footer">
+                        <button class="btn-db btn-db-sm btn-db-gold" onclick="editSavedQuery(${q.id})">✏️ Düzenle</button>
+                        <button class="btn-db btn-db-sm btn-db-emerald" onclick="runSavedQuery(${q.id})">▶ Editörde Aç</button>
+                    </div>
+                </div>
+            `;
+        });
+        grid.innerHTML = html;
+    }
+
+    function editSavedQuery(id) {
+        const queries = getSavedQueries();
+        const found = queries.find(q => q.id === id);
+        if (found) {
+            document.getElementById('edit-query-id').value = found.id;
+            document.getElementById('input-query-name').value = found.name;
+            document.getElementById('input-query-desc').value = found.desc;
+            document.getElementById('input-query-sql').value = found.sql;
+            openSaveModal(false);
+        }
+    }
+
+    function runSavedQuery(id) {
+        const queries = getSavedQueries();
+        const found = queries.find(q => q.id === id);
+        if (found) {
+            document.getElementById('sql-editor-area').value = found.sql;
+            syncLineNumbers();
+            switchSection('editor');
+            showToast("🔍 Sorgu yüklendi", "info");
+        }
+    }
+
+    function deleteSavedQuery(id) {
+        if (!confirm("Bu sorguyu silmek istediğinize emin misiniz?")) return;
+        let queries = getSavedQueries();
+        queries = queries.filter(q => q.id !== id);
+        localStorage.setItem("zirai_erp_queries", JSON.stringify(queries));
+        renderSavedQueries();
+        showToast("🗑️ Sorgu silindi", "info");
+    }
+
+    // MODAL STATE MANAGEMENT
+    function openSaveModal(isNew = true) {
+        const modal = document.getElementById('modal-save-query');
+        if (isNew) {
+            document.getElementById('edit-query-id').value = '';
+            document.getElementById('input-query-name').value = '';
+            document.getElementById('input-query-desc').value = '';
+            document.getElementById('input-query-sql').value = document.getElementById('sql-editor-area').value;
+        }
+        modal.classList.add('open');
+    }
+
+    function closeSaveModal() {
+        document.getElementById('modal-save-query').classList.remove('open');
+    }
+
+    function saveQueryToLocalStorage() {
+        const idVal = document.getElementById('edit-query-id').value;
+        const name = document.getElementById('input-query-name').value.trim();
+        const desc = document.getElementById('input-query-desc').value.trim();
+        const sql = document.getElementById('input-query-sql').value.trim();
+
+        if (!name || !sql) {
+            alert("Sorgu adı ve SQL sorgusu alanları zorunludur!");
+            return;
+        }
+
+        let queries = getSavedQueries();
+
+        if (idVal) {
+            // Update
+            const idx = queries.findIndex(q => q.id === parseInt(idVal));
+            if (idx !== -1) {
+                queries[idx] = { id: parseInt(idVal), name, desc, sql };
+            }
+        } else {
+            // Insert
+            const maxId = queries.reduce((max, q) => q.id > max ? q.id : max, 0);
+            queries.push({ id: maxId + 1, name, desc, sql });
+        }
+
+        localStorage.setItem("zirai_erp_queries", JSON.stringify(queries));
+        closeSaveModal();
+        renderSavedQueries();
+        showToast("💾 Sorgu başarıyla kaydedildi", "ok");
+    }
+
+    // 8. TOAST NOTIFICATIONS
+    function showToast(msg, type = "ok") {
+        const container = document.getElementById('db-toast-container');
+        const el = document.createElement('div');
+        el.className = `db-toast db-toast-${type}`;
+        el.innerHTML = `<span>${msg}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+</script>

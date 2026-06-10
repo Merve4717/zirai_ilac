@@ -1,0 +1,72 @@
+@model List<ZiraiIlacERPWeb.Models.Category>
+
+@{
+    ViewData["Title"] = "Kategoriler";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 style="font-weight: 700; color: var(--text-primary); margin: 0;">📂 Zirai Ürün Kategorileri</h2>
+    <a asp-action="Create" class="btn-premium btn-premium-emerald">➕ Yeni Kategori Ekle</a>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="premium-card">
+            <div class="premium-card-title">Toplam Kategori Sayısı</div>
+            <div class="premium-card-value">@Model.Count</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="premium-card">
+            <div class="premium-card-title">En Çok Ürün Olan Kategori</div>
+            <div class="premium-card-value" style="color: var(--accent-gold);">
+                @{
+                    var topCat = Model.OrderByDescending(c => c.Products?.Count ?? 0).FirstOrDefault();
+                    @if (topCat != null)
+                    {
+                        <span>@topCat.CategoryName (@(topCat.Products?.Count ?? 0) Ürün)</span>
+                    }
+                    else
+                    {
+                        <span>—</span>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="premium-table-container">
+    <table class="premium-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kategori Adı</th>
+                <th>Ürün Çeşidi Sayısı</th>
+                <th>Toplam Stok</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="font-weight: 700; color: var(--accent-emerald);">#@item.Id</td>
+                    <td style="font-weight: 600; color: var(--text-primary);">@item.CategoryName</td>
+                    <td>
+                        <span class="zirai-badge zirai-badge-emerald">@(item.Products?.Count ?? 0) Ürün</span>
+                    </td>
+                    <td>
+                        <span class="zirai-badge zirai-badge-gold">@(item.Products?.Sum(p => p.StockQuantity).ToString("N0") ?? "0") Adet</span>
+                    </td>
+                    <td>
+                        <form asp-action="Delete" method="post" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz? (Kategoriye bağlı ürünlerin kategorisi sıfırlanacaktır)');">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn-premium btn-premium-danger btn-premium-sm">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

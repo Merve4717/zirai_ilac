@@ -1,0 +1,234 @@
+@{
+    ViewData["Title"] = "Yeni Sipariş Oluştur";
+}
+
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 style="font-weight: 700; color: var(--text-primary); margin: 0;">➕ Yeni Sipariş Oluştur</h2>
+        <a asp-action="Index" class="btn-premium btn-premium-secondary btn-premium-sm">Geri Dön</a>
+    </div>
+
+    <form id="orderForm" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row g-4">
+            <!-- Müşteri ve Ürün Ekleme Paneli -->
+            <div class="col-md-5">
+                <div class="premium-card">
+                    <div class="mb-4">
+                        <label class="premium-form-label">Müşteri / Bayi Seçimi *</label>
+                        <select name="customerId" class="form-control premium-input" asp-items="ViewBag.Customers" required>
+                            <option value="">-- Müşteri Seçin --</option>
+                        </select>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                        <h5 style="color: var(--accent-gold); font-size: 0.9rem; font-weight: 700; margin-bottom: 15px; text-transform: uppercase;">📦 Ürün Kalemi Ekle</h5>
+                        
+                        <div class="mb-3">
+                            <label class="premium-form-label">Ürün Seçin</label>
+                            <select id="productSelect" class="form-control premium-input" onchange="updateProductMeta()">
+                                <option value="">-- Ürün Seçin --</option>
+                                @if (ViewBag.Products != null)
+                                {
+                                    foreach (var p in (List<ZiraiIlacERPWeb.Models.Product>)ViewBag.Products)
+                                    {
+                                        <option value="@p.Id" data-price="@p.Price" data-stock="@p.StockQuantity" data-name="@p.ProductName">
+                                            @p.ProductName (@p.Price.ToString("C2", new System.Globalization.CultureInfo("tr-TR")))
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <div id="productStockBadge" class="mt-2" style="font-size: 0.78rem; display: none;">
+                                Mevcut Stok: <span id="stockCount" class="badge bg-success">0</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="premium-form-label">Miktar</label>
+                            <input id="productQty" type="number" value="1" min="1" class="form-control premium-input" />
+                        </div>
+
+                        <button id="addBtn" type="button" class="btn-premium btn-premium-gold w-100 justify-content-center" onclick="addProductRow()">
+                            ➕ Kalem Ekle
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sipariş Kalemleri Listesi -->
+            <div class="col-md-7">
+                <div class="premium-card p-0" style="overflow: hidden; min-height: 300px; display: flex; flex-direction: column;">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0;">🛒 Sipariş Listesi</h4>
+                        <strong id="cartTotal" style="color: var(--accent-emerald); font-size: 1.15rem;">0.00 ₺</strong>
+                    </div>
+
+                    <div style="flex-grow: 1; overflow-y: auto; max-height: 280px;">
+                        <table class="premium-table" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th style="text-align:right;">Birim Fiyat</th>
+                                    <th style="text-align:right;">Miktar</th>
+                                    <th style="text-align:right;">Toplam</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsList">
+                                <tr id="emptyRow">
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">Henüz ürün eklenmedi. Sol taraftan ürün seçip ekleyin.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="padding: 20px 24px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+                        <button type="submit" class="btn-premium btn-premium-emerald w-100 justify-content-center" style="font-size: 1rem; padding: 12px;">
+                            💾 Siparişi Kaydet ve Stoktan Düş
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        let addedProducts = [];
+
+        function updateProductMeta() {
+            const select = document.getElementById('productSelect');
+            const selected = select.options[select.selectedIndex];
+            const badge = document.getElementById('productStockBadge');
+            const stock = document.getElementById('stockCount');
+            const qtyInput = document.getElementById('productQty');
+
+            if (select.value === "") {
+                badge.style.display = 'none';
+                return;
+            }
+
+            const maxStock = parseInt(selected.getAttribute('data-stock'));
+            badge.style.display = 'block';
+            stock.textContent = maxStock + " Adet";
+            
+            // Adjust input max
+            qtyInput.max = maxStock;
+            if (parseInt(qtyInput.value) > maxStock) {
+                qtyInput.value = maxStock;
+            }
+        }
+
+        function addProductRow() {
+            const select = document.getElementById('productSelect');
+            if (select.value === "") {
+                alert("Lütfen önce bir ürün seçin.");
+                return;
+            }
+
+            const selected = select.options[select.selectedIndex];
+            const pId = parseInt(select.value);
+            const pName = selected.getAttribute('data-name');
+            const pPrice = parseFloat(selected.getAttribute('data-price'));
+            const pStock = parseInt(selected.getAttribute('data-stock'));
+            const qtyInput = document.getElementById('productQty');
+            const pQty = parseInt(qtyInput.value);
+
+            if (pQty <= 0 || isNaN(pQty)) {
+                alert("Geçerli bir miktar girin.");
+                return;
+            }
+
+            if (pQty > pStock) {
+                alert(`Mevcut stok (${pStock}) aşılamaz.`);
+                return;
+            }
+
+            // Check if product is already added
+            const existing = addedProducts.find(item => item.productId === pId);
+            if (existing) {
+                if (existing.quantity + pQty > pStock) {
+                    alert(`Bu üründen zaten eklenmiş. Toplam miktar stok sınırını (${pStock}) aşıyor.`);
+                    return;
+                }
+                existing.quantity += pQty;
+            } else {
+                addedProducts.push({
+                    productId: pId,
+                    name: pName,
+                    price: pPrice,
+                    quantity: pQty
+                });
+            }
+
+            // Clear inputs
+            select.value = "";
+            qtyInput.value = 1;
+            document.getElementById('productStockBadge').style.display = 'none';
+
+            renderCartRows();
+        }
+
+        function removeProductRow(productId) {
+            addedProducts = addedProducts.filter(item => item.productId !== productId);
+            renderCartRows();
+        }
+
+        function renderCartRows() {
+            const tbody = document.getElementById('itemsList');
+            const emptyRow = document.getElementById('emptyRow');
+            const totalDisplay = document.getElementById('cartTotal');
+
+            // Remove existing rows (except emptyRow placeholder)
+            const rows = tbody.querySelectorAll('tr:not(#emptyRow)');
+            rows.forEach(r => r.remove());
+
+            if (addedProducts.length === 0) {
+                emptyRow.style.display = 'table-row';
+                totalDisplay.textContent = "0,00 ₺";
+                return;
+            }
+
+            emptyRow.style.display = 'none';
+            let grandTotal = 0;
+
+            addedProducts.forEach((item, index) => {
+                const rowTotal = item.price * item.quantity;
+                grandTotal += rowTotal;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: var(--text-primary);">
+                        ${item.name}
+                        <input type="hidden" name="items[${index}].ProductId" value="${item.productId}" />
+                    </td>
+                    <td style="text-align:right;">${formatCurrency(item.price)}</td>
+                    <td style="text-align:right; font-weight:700; color: var(--text-primary);">
+                        ${item.quantity} Adet
+                        <input type="hidden" name="items[${index}].Quantity" value="${item.quantity}" />
+                    </td>
+                    <td style="text-align:right; font-weight:700; color: var(--accent-emerald);">${formatCurrency(rowTotal)}</td>
+                    <td style="text-align:center;">
+                        <button type="button" class="btn-premium btn-premium-danger btn-premium-sm" style="padding: 2px 6px;" onclick="removeProductRow(${item.productId})">✕</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            totalDisplay.textContent = formatCurrency(grandTotal);
+        }
+
+        function formatCurrency(val) {
+            return val.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+        }
+
+        // Prevent submit on empty cart
+        document.getElementById('orderForm').addEventListener('submit', function (e) {
+            if (addedProducts.length === 0) {
+                e.preventDefault();
+                alert("Siparişe hiç ürün eklemediniz! Lütfen en az bir ürün ekleyin.");
+            }
+        });
+    </script>
+}

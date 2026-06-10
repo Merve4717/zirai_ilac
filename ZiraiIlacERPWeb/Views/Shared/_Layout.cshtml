@@ -1,87 +1,94 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zirai İlaç ERP Sistemi</title>
+    <title>@ViewData["Title"] - Zirai İlaç ERP Sistemi</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-
 <body>
 
-    <div class="d-flex">
+    <div class="zirai-layout-wrapper">
 
-        <!-- SOL MENÜ -->
+        <!-- SOL MENÜ (SIDEBAR) -->
+        <div class="zirai-sidebar">
+            <div class="sidebar-logo">
+                🌱 Zirai İlaç ERP
+            </div>
 
-        <div class="bg-dark text-white p-3"
-             style="width:250px; min-height:100vh;">
-
-            <h3 class="text-center mb-4">
-                🌱 Zirai ERP
-            </h3>
-
-            <hr />
-
-            <ul class="nav flex-column">
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white"
-                       asp-controller="Product"
-                       asp-action="Index">
-                        🏠 Dashboard
+            <ul class="sidebar-menu">
+                <li>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")" 
+                       asp-controller="Dashboard" asp-action="Index">
+                        <span class="icon">🏠</span>
+                        <span>Dashboard</span>
                     </a>
                 </li>
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white"
-                       asp-controller="Product"
-                       asp-action="Index">
-                        📦 Ürünler
+                <li>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")" 
+                       asp-controller="Product" asp-action="Index">
+                        <span class="icon">📦</span>
+                        <span>Ürünler</span>
                     </a>
                 </li>
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white">
-                        📂 Kategoriler
+                <li>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")" 
+                       asp-controller="Category" asp-action="Index">
+                        <span class="icon">📂</span>
+                        <span>Kategoriler</span>
                     </a>
                 </li>
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white">
-                        👥 Müşteriler
+                <li>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")" 
+                       asp-controller="Customer" asp-action="Index">
+                        <span class="icon">👥</span>
+                        <span>Müşteriler</span>
                     </a>
                 </li>
-
-                <li class="nav-item mb-2">
-                    <a class="nav-link text-white">
-                        📊 Raporlar
+                <li>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Order" ? "active" : "")" 
+                       asp-controller="Order" asp-action="Index">
+                        <span class="icon">📋</span>
+                        <span>Siparişler</span>
                     </a>
                 </li>
-
+                <li>
+                    <a class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "DatabaseManager" ? "active" : "")" 
+                       asp-controller="DatabaseManager" asp-action="Index">
+                        <span class="icon">🗄️</span>
+                        <span>Veritabanı Yöneticisi</span>
+                    </a>
+                </li>
             </ul>
-
+            
+            <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 0.72rem; color: var(--text-secondary); text-align: center;">
+                v1.2 — 2026
+            </div>
         </div>
 
-        <!-- İÇERİK -->
-
-        <div class="flex-grow-1">
-
-            <nav class="navbar navbar-dark bg-success">
-                <div class="container-fluid">
-
-                    <span class="navbar-brand mb-0 h1">
+        <!-- İÇERİK BÖLGESİ -->
+        <div class="zirai-content-area">
+            
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg zirai-navbar">
+                <div class="container-fluid p-0">
+                    <span class="navbar-brand">
                         Zirai İlaç ERP Yönetim Paneli
                     </span>
-
+                    
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.82rem; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 600;">
+                            Yönetici Modu
+                        </span>
+                    </div>
                 </div>
             </nav>
 
-            <div class="container mt-4">
-
+            <!-- Ana İçerik Konteyneri -->
+            <div class="zirai-main-container">
                 @RenderBody()
-
             </div>
 
         </div>
@@ -95,4 +102,3 @@
 
 </body>
 </html>
-
