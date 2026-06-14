@@ -44,6 +44,14 @@ Proje kapsamında modern yazılım geliştirme yaklaşımları kullanılarak kat
 - Entity Framework Core kullanımı
 - CRUD işlemleri
 
+### 📊 Proje Yönetimi Modülü
+- CPM (Critical Path Method) algoritması ile kritik yol analizi
+- Takvim uyumlu Gantt Şeması (göreve ve ekibe göre)
+- Proje ekibi yönetimi ve iş yükü görselleştirme
+- Bütçe ve sermaye takibi (gelir/gider hareketleri)
+
+> 📄 **Proje Yönetimi detayları için:** [PROJE_YONETIMI.md](PROJE_YONETIMI.md)
+
 ---
 
 ## 🏗️ Mimari Yapı
@@ -74,6 +82,7 @@ MVC kullanıcı arayüzü
 - Ürün Listesi
 - Yeni Ürün Ekleme Sayfası
 - Ürün Silme İşlemi
+- 📊 [Proje Yönetimi Paneli](PROJE_YONETIMI.md) (Gantt Şeması, CPM Analizi, Ekip ve Bütçe Yönetimi)
 
 ---
 
@@ -87,6 +96,15 @@ Bu proje;
 - Temel ERP mantığını uygulamak
 
 amacıyla geliştirilmiştir.
+
+---
+
+## 📁 Dokümantasyon
+
+| Dosya | İçerik |
+|-------|--------|
+| [README.md](README.md) | Genel proje tanıtımı |
+| [PROJE_YONETIMI.md](PROJE_YONETIMI.md) | 📊 Proje Yönetimi Modülü — Gantt, CPM, Ekip, Bütçe |
 
 ---
 
