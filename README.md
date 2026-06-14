@@ -95,9 +95,3 @@ amacıyla geliştirilmiştir.
 Merve Rüzgar
 
 Yazılım Mühendisliği Öğrencisi
-
----
-
-## 📌 Not
-
-Bu proje eğitim ve staj çalışmaları kapsamında geliştirilmiştir.
